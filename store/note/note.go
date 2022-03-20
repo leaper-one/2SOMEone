@@ -64,7 +64,7 @@ func (s *noteStore) DeleteByNoteID(ctx context.Context, note_id string) error {
 	return nil
 }
 
-// 指定查询类型，需要提前获得对方的userID
+// 指定查询类型，需要提前获得userID
 func (s *noteStore) GetNotes(ctx context.Context, offset, limit int, sender, recipient string) ([]*core.Note,int64, error) {
 	var notedb *gorm.DB
 	if recipient != "" && sender != "" {

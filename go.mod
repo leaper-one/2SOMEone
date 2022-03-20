@@ -7,6 +7,7 @@ require (
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/fox-one/mixin-sdk-go v1.6.2
 	github.com/gin-gonic/gin v1.7.7
+	github.com/gofrs/uuid v4.2.0+incompatible
 	github.com/shopspring/decimal v1.3.1
 	github.com/sirupsen/logrus v1.8.1
 	golang.org/x/crypto v0.0.0-20220315160706-3147a52a75dd
