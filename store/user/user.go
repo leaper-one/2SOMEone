@@ -1,8 +1,8 @@
 package user
 
 import (
-	"2Some/core"
-	"2Some/util"
+	"2SOMEone/core"
+	"2SOMEone/util"
 	"context"
 	"errors"
 

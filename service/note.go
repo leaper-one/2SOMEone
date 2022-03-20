@@ -1,10 +1,10 @@
 package service
 
 import (
-	"2Some/core"
-	"2Some/store/note"
-	"2Some/store/user"
-	"2Some/util"
+	"2SOMEone/core"
+	"2SOMEone/store/note"
+	"2SOMEone/store/user"
+	"2SOMEone/util"
 	"context"
 
 	"github.com/gofrs/uuid"
@@ -51,18 +51,18 @@ func (n *NoteService) Delete(ctx context.Context, note_id string) error {
 }
 func (n *NoteService) SenderGet(ctx context.Context, offset, limit int, user_id string) ([]*core.Note, int64, error) {
 	noteStore := note.New(n.db)
-	notes,count,err:=noteStore.GetNotes(ctx, offset,limit,user_id,"")
+	notes, count, err := noteStore.GetNotes(ctx, offset, limit, user_id, "")
 	if err != nil {
-		return nil,0,err
+		return nil, 0, err
 	}
 	return notes, count, nil
 }
 
 func (n *NoteService) RecipientGet(ctx context.Context, offset, limit int, user_id string) ([]*core.Note, int64, error) {
 	noteStore := note.New(n.db)
-	notes,count,err:=noteStore.GetNotes(ctx, offset,limit,"",user_id)
+	notes, count, err := noteStore.GetNotes(ctx, offset, limit, "", user_id)
 	if err != nil {
-		return nil,0,err
+		return nil, 0, err
 	}
 	return notes, count, nil
 }

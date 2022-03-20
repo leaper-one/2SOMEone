@@ -1,9 +1,9 @@
 package service
 
 import (
-	"2Some/core"
-	"2Some/store/user"
-	"2Some/util"
+	"2SOMEone/core"
+	"2SOMEone/store/user"
+	"2SOMEone/util"
 	"context"
 	"errors"
 	"fmt"

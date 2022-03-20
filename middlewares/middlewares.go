@@ -1,7 +1,7 @@
 package middlewares
 
 import (
-	"2Some/util"
+	"2SOMEone/util"
 	"net/http"
 	"strings"
 

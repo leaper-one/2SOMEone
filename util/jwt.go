@@ -7,18 +7,19 @@ import (
 	jwt "github.com/dgrijalva/jwt-go"
 )
 
-var SecretKey = "2some.one"
+var SecretKey = "2SOMEone.one"
+
 func GenerateToken(user_id string, expireDuration time.Duration) (string, error) {
 	expire := time.Now().Add(expireDuration)
 	// 将 uid，用户角色， 过期时间作为数据写入 token 中
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, LoginClaims{
-		UserID:  user_id,
+		UserID: user_id,
 		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: expire.Unix(),
-			Issuer: "LEAPERone",
+			Issuer:    "LEAPERone",
 		},
 	})
-	
+
 	// SecretKey 用于对用户数据进行签名，不能暴露
 	return token.SignedString([]byte(SecretKey))
 }
@@ -39,6 +40,6 @@ func ParseToken(tokenString string) (*LoginClaims, error) {
 }
 
 type LoginClaims struct {
-	UserID         string `json:"user_id"`
+	UserID string `json:"user_id"`
 	jwt.StandardClaims
 }

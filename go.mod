@@ -1,4 +1,4 @@
-module 2Some
+module 2SOMEoneone
 
 go 1.16
 

@@ -1,7 +1,7 @@
-package util 
+package util
 
 import (
-	"2Some/core"
+	"2SOMEone/core"
 	"log"
 
 	"github.com/sirupsen/logrus"

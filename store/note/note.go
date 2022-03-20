@@ -1,8 +1,8 @@
 package note
 
 import (
-	"2Some/core"
-	"2Some/util"
+	"2SOMEone/core"
+	"2SOMEone/util"
 	"context"
 	"errors"
 
@@ -65,7 +65,7 @@ func (s *noteStore) DeleteByNoteID(ctx context.Context, note_id string) error {
 }
 
 // 指定查询类型，需要提前获得userID
-func (s *noteStore) GetNotes(ctx context.Context, offset, limit int, sender, recipient string) ([]*core.Note,int64, error) {
+func (s *noteStore) GetNotes(ctx context.Context, offset, limit int, sender, recipient string) ([]*core.Note, int64, error) {
 	var notedb *gorm.DB
 	if recipient != "" && sender != "" {
 		notedb = s.db.View().Where(&core.Note{Sender: sender, Recipient: recipient}).Model(&core.Note{})
