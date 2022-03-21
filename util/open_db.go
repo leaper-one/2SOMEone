@@ -19,7 +19,7 @@ func OpenDB(path string) *DB {
 	if err != nil {
 		log.Panicln(err)
 	}
-	db.AutoMigrate(&core.User{},&core.Image{})
+	db.AutoMigrate(&core.User{},&core.Image{},&core.Note{})
 	return &DB{write: db,read: db}
 }
 

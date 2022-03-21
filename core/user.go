@@ -10,28 +10,28 @@ type (
 	User struct {
 		gorm.Model
 		UserID      string `gorm:"size:36;unique_index"`
+		Name        string `gorm:"size:64; unique_index" json:"name,omitempty"`
+		Phone       string `gorm:"size:14;index" json:"phone,omitempty"`
+		Email       string `gorm:"unique_index" json:"email,omitempty"`
+		Code        string `gorm:"size:6"`
 		Password    string `gorm:"size:20" json:"password,omitempty"`
+		Buid        string `json:"buid,omitempty"`
 		MixinID     string `gorm:"size:36;unique_index" json:"mixin_id,omitempty"`
 		Role        string `gorm:"size:24" json:"role,omitempty"`
 		Lang        string `gorm:"size:36;default:'zh'" json:"lang,omitempty"`
-		Name        string `gorm:"size:64; unique_index" json:"name,omitempty"`
-		Buid        string `json:"buid,omitempty"`
 		Avatar      string `gorm:"size:255" json:"avatar,omitempty"`
 		AccessToken string `gorm:"size:512" json:"access_token,omitempty"`
-		Phone       string `gorm:"size:14;index" json:"phone,omitempty"`
-		Code        string `gorm:"size:6"`
 		// Balence     decimal.Decimal `gorm:"precision:2"`
-		// Email       string          `gorm:"unique_index" json:"email,omitempty"`
 	}
 
 	LoginUser struct {
-		Phone string `json:"phone,omitempty"`
+		Phone string `json:"phone"`
 		Code  string `json:"code,omitempty"`
 		// Email    string `json:"email,omitempty"`
-		Password string `json:"password"`
+		Password string `json:"password,omitempty"`
 	}
 
-	SignUp struct {
+	SignUpUser struct {
 		Phone    string `json:"phone,omitempty"`
 		Code     string `json:"code,omitempty"`
 		Password string `json:"password"`
@@ -50,7 +50,7 @@ type (
 
 	UserService interface {
 		GetPhoneCode(ctx context.Context, phone string) error
-		SignUp(ctx context.Context, l_user *SignUp) (*User, string, error)
+		SignUp(ctx context.Context, l_user *SignUpUser) (*User, string, error)
 		// Login(ctx context.Context, token string) (*User, error)
 		Auth(ctx context.Context, login_user *LoginUser) (string, error)
 	}

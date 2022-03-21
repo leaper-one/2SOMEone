@@ -26,9 +26,11 @@ type UserService struct {
 	db *util.DB
 }
 
-func (a *UserService) GetPhoneCode(ctx context.Context, phone string) error {
+func (a *UserService) SendPhoneCode(ctx context.Context, phone string) (string, error) {
 	client, err := dysmsapi.NewClientWithAccessKey("cn-hangzhou", "LTAI5tREMX8wtEQoaSgGki4Z", "YGtpz8dZWTrWQqDm4fk4NlsaFHJNCW")
-
+	if err != nil {
+		return "", err
+	}
 	request := dysmsapi.CreateSendSmsRequest()
 	request.Scheme = "https"
 
@@ -36,23 +38,23 @@ func (a *UserService) GetPhoneCode(ctx context.Context, phone string) error {
 	vcode := fmt.Sprintf("%06v", rnd.Int31n(1000000)) // store
 
 	userStore := user.New(a.db)
-	go userStore.Save(ctx, &core.User{Phone: phone, Code: vcode})
+	go userStore.Save(ctx, &core.User{Phone: phone, Code: vcode, Role: "informal"})
 
 	request.PhoneNumbers = phone
 	request.SignName = "ABC商城"
 	request.TemplateCode = "SMS_205575254"
-	request.TemplateParam = vcode
+	request.TemplateParam = "{\"code\":"+"\""+vcode+"\"}"
 
 	respon, err := client.SendSms(request)
 	if err != nil {
-		return err
+		return "", err
 	}
 	fmt.Printf("respon: %+v\n", respon)
 
-	return nil
+	return vcode, nil
 }
 
-func (a *UserService) SignUp(ctx context.Context, sign_user *core.SignUp) (*core.User, string, error) {
+func (a *UserService) SignUp(ctx context.Context, sign_user *core.SignUpUser) (*core.User, string, error) {
 	userStore := user.New(a.db)
 	user, err := userStore.FindByPhone(ctx, sign_user.Phone)
 	if err != nil {
@@ -63,14 +65,19 @@ func (a *UserService) SignUp(ctx context.Context, sign_user *core.SignUp) (*core
 		user_id, _ := uuid.NewV1()
 		// user := &core.User{Email: email, Role: "formal", UserID: user_id.String(),Code: ""}
 		user.Password, _ = util.HashPassword(sign_user.Password)
-		user.Role = "formal"
+		// user.Role = "formal"
 		user.UserID = user_id.String()
 		user.Code = ""
 		err := userStore.Save(ctx, user)
 		if err != nil {
 			return nil, "", err
 		}
-		token, err := util.GenerateToken(user.UserID, time.Hour*7*24)
+		user.Role = "formal"
+		err = userStore.Save(ctx, user)
+		if err != nil {
+			return nil, "", err
+		}
+		token, _ := util.GenerateToken(user.UserID, time.Hour*7*24)
 		return user, token, nil
 	} else {
 		return nil, "", errors.New("验证码错误")
@@ -87,9 +94,9 @@ func (a *UserService) Auth(ctx context.Context, login_user *core.LoginUser) (str
 	if util.CheckPasswordHash(login_user.Password, user.Password) {
 		token, err := util.GenerateToken(user.UserID, time.Hour*7*24)
 		if err != nil {
-			return token, nil
+			return "", err
 		}
-		return "", err
+		return token, nil
 	}
 	return "", err
 }

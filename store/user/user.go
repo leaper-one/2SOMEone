@@ -28,9 +28,9 @@ func toUpdateParams(user *core.User) map[string]interface{} {
 		"mixin_id":     user.MixinID,
 		"user_id":      user.UserID,
 		"buid":         user.Buid,
-		// "email":        user.Email,
-		// "phone":        user.Phone,
-		// "code":         user.Code,
+		"email":        user.Email,
+		"phone":        user.Phone,
+		"code":         user.Code,
 		// "balence":      user.Balence,
 	}
 }
@@ -38,6 +38,12 @@ func toUpdateParams(user *core.User) map[string]interface{} {
 func update(db *util.DB, user *core.User) (int64, error) {
 	updates := toUpdateParams(user)
 	tx := db.Update().Model(user).Where("user_id = ?", user.UserID).Updates(updates)
+	return tx.RowsAffected, tx.Error
+}
+
+func updateByPhone(db *util.DB, user *core.User) (int64, error) {
+	updates := toUpdateParams(user)
+	tx := db.Update().Model(user).Where("phone = ?", user.Phone).Updates(updates)
 	return tx.RowsAffected, tx.Error
 }
 
@@ -49,7 +55,13 @@ func update(db *util.DB, user *core.User) (int64, error) {
 
 func (s *userStore) Save(_ context.Context, user *core.User) error {
 	return s.db.Tx(func(tx *util.DB) error {
-		rows, err := update(tx, user)
+		var rows int64
+		var err error
+		if user.Role == "informal" {
+			rows, err = updateByPhone(tx, user)
+		} else {
+			rows, err = update(tx, user)
+		}
 		if err != nil {
 			return err
 		}
