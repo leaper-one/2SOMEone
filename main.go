@@ -19,6 +19,7 @@ func main() {
 	dbc := util.OpenDB("./2-some-one.db")
 
 	userServer := service.NewUserService(dbc)
+	NoteService := service.NewNoteService(dbc)
 
 	r := gin.Default()
 	r.Use(middlewares.Cors())
@@ -83,7 +84,33 @@ func main() {
 			"msg":  "success",
 			"data": gin.H{"token": token},
 		})
+	})
+
+	r.POST("/noteto/:rname", middlewares.JWTAuthMiddleware(), func(c *gin.Context) {
+		ctx := context.Background()
+		rname := c.Param("rname")
+		var tnote core.Note
+		err := c.ShouldBind(&tnote)
+		if err != nil || rname == "" {
+			c.JSON(http.StatusOK, gin.H{
+				"code": 2001,
+				"msg":  "无效的参数",
+			})
+			return
+		}
+
+		err = NoteService.Create(ctx, &tnote, rname)
+		if err != nil {
+			c.JSON(http.StatusBadGateway, gin.H{
+				"code": 2002,
+				"msg":  "失败",
+			})
+		}
+		c.JSON(http.StatusOK, gin.H{
+			"code": 2000,
+			"msg":  "成功",
 		})
+	})
 
 	r.Run(":3002")
 }

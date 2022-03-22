@@ -11,7 +11,7 @@ type (
 		NoteID    string `gorm:"size:36;unique_index"`
 		Type      int8   `gorm:"default:0"`
 		Context   string `gorm:"size:140"`
-		AttID     []string
+		Atts     []string
 		Imgs      []string
 		Sender    string `gorm:"size:36;unique_index"`
 		Recipient string `gorm:"size:36;unique_index"`
@@ -31,7 +31,7 @@ type (
 	}
 
 	NoteService interface {
-		Create(ctx context.Context, tnote *Note, note_type int8, recipient_name string) error
+		Create(ctx context.Context, tnote *Note, recipient_name string) error
 		Delete(ctx context.Context, note_id string) error
 		// Get(ctx context.Context, offset, limit int, user_id string) ([]*Note, int64, error)
 		SenderGet(ctx context.Context, offset, limit int, user_id string) ([]*Note, int64, error)

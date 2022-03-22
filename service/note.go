@@ -6,6 +6,7 @@ import (
 	"2SOMEone/store/user"
 	"2SOMEone/util"
 	"context"
+	"errors"
 
 	"github.com/gofrs/uuid"
 )
@@ -22,15 +23,17 @@ type NoteService struct {
 	db *util.DB
 }
 
-func (n *NoteService) Create(ctx context.Context, tnote *core.Note, note_type int8, recipient_name string) error {
+func (n *NoteService) Create(ctx context.Context, tnote *core.Note,recipient_name string) error {
 	noteStore := note.New(n.db)
 	userStore := user.New(n.db)
 	ruser, err := userStore.FindByName(ctx, recipient_name)
-	if err != nil || ruser.ID == 0 {
+	if err != nil {
 		return err
 	}
+	if ruser.ID == 0 {
+		return errors.New("无此用户")
+	}
 	tnote.Recipient = ruser.UserID
-	tnote.Type = note_type
 	note_id, _ := uuid.NewV1()
 	tnote.NoteID = note_id.String()
 
