@@ -24,6 +24,21 @@ type (
 		// Balence     decimal.Decimal `gorm:"precision:2"`
 	}
 
+	UserForShow struct {
+		Name   string `gorm:"size:64; unique_index" json:"name,omitempty"`
+		Avatar string `gorm:"size:255" json:"avatar,omitempty"`
+	}
+
+	UserForMe struct {
+		Name   string `gorm:"size:64; unique_index" json:"name,omitempty"`
+		Phone  string `gorm:"size:14;index" json:"phone,omitempty"`
+		Email  string `gorm:"unique_index" json:"email,omitempty"`
+		Buid   string `json:"buid,omitempty"`
+		Role   string `gorm:"size:24" json:"role,omitempty"`
+		Lang   string `gorm:"size:36;default:'zh'" json:"lang,omitempty"`
+		Avatar string `gorm:"size:255" json:"avatar,omitempty"`
+	}
+
 	LoginUser struct {
 		Phone string `json:"phone"`
 		Code  string `json:"code,omitempty"`
@@ -45,6 +60,8 @@ type (
 		// FindByEmail(ctx context.Context, email string) (*User, error)
 		FindByName(ctx context.Context, neme string) (*User, error)
 		FindByUserID(_ context.Context, user_id string) (*User, error)
+		FindByUserIDForShow(_ context.Context, user_id string) (*UserForShow, error)
+		FindByUserIDForMe(_ context.Context, user_id string) (*UserForMe, error)
 		DeleteByUserID(_ context.Context, email string) error
 	}
 
@@ -53,5 +70,6 @@ type (
 		SignUp(ctx context.Context, l_user *SignUpUser) (*User, string, error)
 		// Login(ctx context.Context, token string) (*User, error)
 		Auth(ctx context.Context, login_user *LoginUser) (string, error)
+		GetMe(ctx context.Context, user_id string) (*User, error)
 	}
 )

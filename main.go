@@ -81,7 +81,7 @@ func main() {
 		})
 	})
 
-	r.POST("/noteto/:rname", middlewares.JWTAuthMiddleware(), func(c *gin.Context) {
+	r.POST("/to/:rname", middlewares.JWTAuthMiddleware(), func(c *gin.Context) {
 		ctx := context.Background()
 		rname := c.Param("rname")
 		var tnote core.Note
@@ -105,6 +105,34 @@ func main() {
 			"code": 2000,
 			"msg":  "成功",
 		})
+	})
+
+	r.GET("/me", middlewares.JWTAuthMiddleware(), func(c *gin.Context) {
+		ctx := context.Background()
+		user_id:=c.MustGet("user_id").(string)
+		user,err:=userService.GetMe(ctx,user_id)
+		if err != nil {
+			c.JSON(http.StatusOK, gin.H{
+				"code": 2002,
+				"msg": "失败，无此用户",
+			})
+			return
+		}
+		c.JSON(http.StatusOK, user) // 返回信息
+	})
+
+	r.GET("/user/:user_name", func(c *gin.Context){
+		ctx := context.Background()
+		user_name:=c.Param("user_name")
+		user,err:=userService.VisitUser(ctx,user_name)
+		if err != nil {
+			c.JSON(http.StatusOK, gin.H{
+				"code": 2002,
+				"msg": "失败，无此用户",
+			})
+			return
+		}
+		c.JSON(http.StatusOK, user) // 返回信息
 	})
 
 	r.Run(":3002")

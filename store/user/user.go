@@ -130,6 +130,24 @@ func (s *userStore) FindByUserID(_ context.Context, user_id string) (*core.User,
 	return &user, nil
 }
 
+func (s *userStore) FindByUserIDForShow(_ context.Context, user_id string) (*core.UserForShow, error) {
+	user := core.UserForShow{}
+	if err := s.db.View().Model(&core.User{}).Where("user_id = ?", user_id).Find(&user).Error; err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
+		return nil, err
+	}
+
+	return &user, nil
+}
+
+func (s *userStore) FindByUserIDForMe(_ context.Context, user_id string) (*core.UserForMe, error) {
+	user := core.UserForMe{}
+	if err := s.db.View().Model(&core.User{}).Where("user_id = ?", user_id).Find(&user).Error; err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
+		return nil, err
+	}
+
+	return &user, nil
+}
+
 func (s *userStore) DeleteByUserID(_ context.Context, user_id string) error {
 	if err := s.db.Update().Where("user_id = ?", user_id).Delete(&core.User{}).Error; err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
 		return err
