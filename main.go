@@ -13,23 +13,19 @@ import (
 )
 
 func main() {
-	// go checkImgByDate(".jpg")
-	// go checkImgByDate(".png")
 	// baseapi := "https://imgapi.leaper.one"
 	dbc := util.OpenDB("./2-some-one.db")
 
-	userServer := service.NewUserService(dbc)
-	NoteService := service.NewNoteService(dbc)
+	userService := service.NewUserService(dbc)
+	noteService := service.NewNoteService(dbc)
 
 	r := gin.Default()
 	r.Use(middlewares.Cors())
 
 	r.GET("/phonecode", func(c *gin.Context) {
 		ctx := context.Background()
-		// phone := c.Request.FormValue("phone")
 		phone := c.Query("phone")
-		// code, err := util.SendMail(email)
-		code, err := userServer.SendPhoneCode(ctx, phone)
+		code, err := userService.SendPhoneCode(ctx, phone)
 		if err != nil {
 			c.String(http.StatusBadGateway, fmt.Sprintf("参数错误:%v", phone))
 			return
@@ -49,7 +45,7 @@ func main() {
 
 		sign_user := &core.SignUpUser{Phone: rphone, Code: rcode, Password: password}
 		// user, err := userServer.SendPhoneCode.SignUpByEmail(ctx, remail, rcode, password)
-		user, _, err := userServer.SignUp(ctx, sign_user)
+		user, _, err := userService.SignUp(ctx, sign_user)
 		if err != nil {
 			c.String(http.StatusOK, fmt.Sprintf("注册失败：%v", user.Phone))
 			return
@@ -68,10 +64,9 @@ func main() {
 			})
 			return
 		}
-		// user, _ := .FindByEmail(ctx, login_user.Email)
 
 		// 校验用户名和密码是否正确
-		token, err := userServer.Auth(ctx, &login_user)
+		token, err := userService.Auth(ctx, &login_user)
 		if err != nil {
 			c.JSON(http.StatusOK, gin.H{
 				"code": 2002,
@@ -86,7 +81,7 @@ func main() {
 		})
 	})
 
-	r.POST("/noteto/:rname", middlewares.JWTAuthMiddleware(), func(c *gin.Context) {
+	r.POST("/to/:rname", middlewares.JWTAuthMiddleware(), func(c *gin.Context) {
 		ctx := context.Background()
 		rname := c.Param("rname")
 		var tnote core.Note
@@ -99,7 +94,7 @@ func main() {
 			return
 		}
 
-		err = NoteService.Create(ctx, &tnote, rname)
+		err = noteService.Create(ctx, &tnote, rname)
 		if err != nil {
 			c.JSON(http.StatusBadGateway, gin.H{
 				"code": 2002,
@@ -110,6 +105,34 @@ func main() {
 			"code": 2000,
 			"msg":  "成功",
 		})
+	})
+
+	r.GET("/me", middlewares.JWTAuthMiddleware(), func(c *gin.Context) {
+		ctx := context.Background()
+		user_id:=c.MustGet("user_id").(string)
+		user,err:=userService.GetMe(ctx,user_id)
+		if err != nil {
+			c.JSON(http.StatusOK, gin.H{
+				"code": 2002,
+				"msg": "失败，无此用户",
+			})
+			return
+		}
+		c.JSON(http.StatusOK, user) // 返回信息
+	})
+
+	r.GET("/user/:user_name", func(c *gin.Context){
+		ctx := context.Background()
+		user_name:=c.Param("user_name")
+		user,err:=userService.VisitUser(ctx,user_name)
+		if err != nil {
+			c.JSON(http.StatusOK, gin.H{
+				"code": 2002,
+				"msg": "失败，无此用户",
+			})
+			return
+		}
+		c.JSON(http.StatusOK, user) // 返回信息
 	})
 
 	r.Run(":3002")

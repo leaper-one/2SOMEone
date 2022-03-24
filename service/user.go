@@ -66,6 +66,7 @@ func (a *UserService) SignUp(ctx context.Context, sign_user *core.SignUpUser) (*
 		// user := &core.User{Email: email, Role: "formal", UserID: user_id.String(),Code: ""}
 		user.Password, _ = util.HashPassword(sign_user.Password)
 		// user.Role = "formal"
+		user.Name=user.Phone
 		user.UserID = user_id.String()
 		user.Code = ""
 		err := userStore.Save(ctx, user)
@@ -98,5 +99,29 @@ func (a *UserService) Auth(ctx context.Context, login_user *core.LoginUser) (str
 		}
 		return token, nil
 	}
-	return "", err
+	return "", errors.New("密码错误")
+}
+
+func (a *UserService) GetMe(ctx context.Context, user_id string) (*core.UserForMe, error) {
+	userStore := user.New(a.db)
+	// user, err := userStore.FindByPhone(ctx, .Phone)
+	user,err:=userStore.FindByUserIDForMe(ctx, user_id)
+	if err != nil {
+		return nil, err
+	}
+	return user, nil
+}
+
+
+func (a *UserService) VisitUser(ctx context.Context, user_name string) (*core.UserForShow, error) {
+	userStore := user.New(a.db)
+	user, err := userStore.FindByName(ctx, user_name)
+	if err != nil {
+		return nil, err
+	}
+	user_for_show,err:=userStore.FindByUserIDForShow(ctx,user.UserID)
+	if err != nil {
+		return nil, err
+	}
+	return user_for_show, nil
 }
