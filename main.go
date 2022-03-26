@@ -15,6 +15,8 @@ import (
 func main() {
 	// baseapi := "https://imgapi.leaper.one"
 	dbc := util.OpenDB("./2-some-one.db")
+	// gin.SetMode(gin.DebugMode)
+	gin.SetMode(gin.ReleaseMode)
 
 	userService := service.NewUserService(dbc)
 	noteService := service.NewNoteService(dbc)
@@ -89,7 +91,7 @@ func main() {
 			c.JSON(http.StatusOK, gin.H{
 				"code": 2002,
 				// "msg":  "鉴权失败",
-				"msg":  err.Error(),
+				"msg": err.Error(),
 			})
 			return
 		}
@@ -102,6 +104,7 @@ func main() {
 
 	r.POST("/to/:rname", middlewares.JWTAuthMiddleware(), func(c *gin.Context) {
 		ctx := context.Background()
+		sender_id := c.MustGet("user_id")
 		rname := c.Param("rname")
 		var tnote core.Note
 		err := c.ShouldBind(&tnote)
@@ -113,12 +116,14 @@ func main() {
 			return
 		}
 
-		err = noteService.Create(ctx, &tnote, rname)
+		tnote.Sender = sender_id.(string)
+		err = noteService.Create(ctx, tnote.ForStore(), rname)
 		if err != nil {
 			c.JSON(http.StatusBadGateway, gin.H{
 				"code": 2002,
 				"msg":  "失败",
 			})
+			return
 		}
 		c.JSON(http.StatusOK, gin.H{
 			"code": 2000,
@@ -152,6 +157,29 @@ func main() {
 			return
 		}
 		c.JSON(http.StatusOK, user) // 返回信息
+	})
+
+	r.GET("/note/:note_id", middlewares.JWTAuthMiddleware(), func(c *gin.Context) {
+		ctx := context.Background()
+		note_id := c.Param("note_id")
+		note, err := noteService.GetByID(ctx, note_id)
+		if err != nil {
+			c.JSON(http.StatusForbidden, gin.H{
+				"code": 2002,
+				"msg":  err.Error(),
+			})
+			return
+		}
+		note, err = note.ForRead()
+		if err != nil {
+			c.JSON(http.StatusForbidden, gin.H{
+				"code": 2002,
+				"msg":  err.Error(),
+			})
+			return
+		}
+		c.JSON(http.StatusOK, note)
+
 	})
 
 	r.Run(":3002")

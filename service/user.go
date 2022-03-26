@@ -92,6 +92,8 @@ func (a *UserService) Auth(ctx context.Context, login_user *core.LoginUser) (str
 	user, err := userStore.FindByPhone(ctx, login_user.Phone)
 	if err != nil {
 		return "", err
+	} else if user == nil && err == nil {
+		return "", errors.New("该手机号未绑定")
 	}
 	if util.CheckPasswordHash(login_user.Password, user.Password) {
 		token, err := util.GenerateToken(user.UserID, time.Hour*7*24)

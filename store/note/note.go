@@ -22,6 +22,7 @@ func toUpdateParams(note *core.Note) map[string]interface{} {
 		"note_id":   note.NoteID,
 		"context":   note.Context,
 		"imgs":      note.Imgs,
+		"atts":      note.Atts,
 		"sender":    note.Sender,
 		"recipient": note.Recipient,
 	}
