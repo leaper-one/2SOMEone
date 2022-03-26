@@ -23,14 +23,13 @@ type NoteService struct {
 	db *util.DB
 }
 
-func (n *NoteService) Create(ctx context.Context, tnote *core.Note,recipient_name string) error {
+func (n *NoteService) Create(ctx context.Context, tnote *core.Note, recipient_name string) error {
 	noteStore := note.New(n.db)
 	userStore := user.New(n.db)
 	ruser, err := userStore.FindByName(ctx, recipient_name)
 	if err != nil {
 		return err
-	}
-	if ruser.ID == 0 {
+	} else if ruser == nil && err == nil {
 		return errors.New("无此用户")
 	}
 	tnote.Recipient = ruser.UserID

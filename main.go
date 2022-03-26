@@ -27,30 +27,48 @@ func main() {
 		phone := c.Query("phone")
 		code, err := userService.SendPhoneCode(ctx, phone)
 		if err != nil {
-			c.String(http.StatusBadGateway, fmt.Sprintf("参数错误:%v", phone))
+			c.JSON(http.StatusOK, gin.H{
+				"code": 2001,
+				"msg":  err.Error(),
+			})
+			// c.String(http.StatusBadGateway, fmt.Sprintf("参数错误:%v", phone))
 			return
 		}
 		fmt.Printf("code: %v\n", code)
 		fmt.Printf("err: %v\n", err)
 		// accounter.CreateByEmail(ctx, email, code)
-		c.String(http.StatusOK, fmt.Sprintf("已向 %s 发送验证码 ", phone))
+		// c.String(http.StatusOK, fmt.Sprintf("已向 %s 发送验证码 ", phone))
+		c.JSON(http.StatusOK, gin.H{
+			"code": 2000,
+			"msg":  "验证码已发送",
+		})
 	})
 
 	r.POST("/signup", func(c *gin.Context) {
 		ctx := context.Background()
-		// remail := c.Request.FormValue("email")
-		rphone := c.Request.FormValue("phone")
-		rcode := c.Request.FormValue("code")
-		password := c.Request.FormValue("password")
-
-		sign_user := &core.SignUpUser{Phone: rphone, Code: rcode, Password: password}
-		// user, err := userServer.SendPhoneCode.SignUpByEmail(ctx, remail, rcode, password)
-		user, _, err := userService.SignUp(ctx, sign_user)
+		var logup_user core.SignUpUser
+		err := c.ShouldBind(&logup_user)
 		if err != nil {
-			c.String(http.StatusOK, fmt.Sprintf("注册失败：%v", user.Phone))
+			c.JSON(http.StatusOK, gin.H{
+				"code": 2001,
+				"msg":  "无效的参数",
+			})
 			return
 		}
-		c.JSON(http.StatusOK, user)
+
+		user, err := userService.SignUpByPhone(ctx, &logup_user)
+		if err != nil {
+			c.JSON(http.StatusOK, gin.H{
+				"code": 2001,
+				"msg":  err.Error(),
+			})
+			return
+		}
+		c.JSON(http.StatusOK, gin.H{
+			"code":  2000,
+			"phone": user.Phone,
+			"msg":   "注册成功",
+		})
 	})
 
 	r.POST("/auth", func(c *gin.Context) {
@@ -70,7 +88,8 @@ func main() {
 		if err != nil {
 			c.JSON(http.StatusOK, gin.H{
 				"code": 2002,
-				"msg":  "鉴权失败",
+				// "msg":  "鉴权失败",
+				"msg":  err.Error(),
 			})
 			return
 		}
@@ -89,7 +108,7 @@ func main() {
 		if err != nil || rname == "" {
 			c.JSON(http.StatusOK, gin.H{
 				"code": 2001,
-				"msg":  "无效的参数",
+				"msg":  err.Error(),
 			})
 			return
 		}
@@ -109,26 +128,26 @@ func main() {
 
 	r.GET("/me", middlewares.JWTAuthMiddleware(), func(c *gin.Context) {
 		ctx := context.Background()
-		user_id:=c.MustGet("user_id").(string)
-		user,err:=userService.GetMe(ctx,user_id)
+		user_id := c.MustGet("user_id").(string)
+		user, err := userService.GetMe(ctx, user_id)
 		if err != nil {
 			c.JSON(http.StatusOK, gin.H{
 				"code": 2002,
-				"msg": "失败，无此用户",
+				"msg":  err.Error(),
 			})
 			return
 		}
 		c.JSON(http.StatusOK, user) // 返回信息
 	})
 
-	r.GET("/user/:user_name", func(c *gin.Context){
+	r.GET("/user/:user_name", func(c *gin.Context) {
 		ctx := context.Background()
-		user_name:=c.Param("user_name")
-		user,err:=userService.VisitUser(ctx,user_name)
+		user_name := c.Param("user_name")
+		user, err := userService.VisitUser(ctx, user_name)
 		if err != nil {
 			c.JSON(http.StatusOK, gin.H{
 				"code": 2002,
-				"msg": "失败，无此用户",
+				"msg":  err.Error(),
 			})
 			return
 		}

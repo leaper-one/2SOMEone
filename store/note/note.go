@@ -52,6 +52,8 @@ func (s *noteStore) FindByNoteID(ctx context.Context, note_id string) (*core.Not
 	note := core.Note{}
 	if err := s.db.View().Where("note_id = ?", note_id).Take(&note).Error; err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
 		return nil, err
+	} else if errors.Is(err, gorm.ErrRecordNotFound) {
+		return nil, nil
 	}
 
 	return &note, nil

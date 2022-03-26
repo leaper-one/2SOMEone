@@ -92,6 +92,8 @@ func (s *userStore) FindByMixinID(_ context.Context, mixinID string) (*core.User
 	user := core.User{}
 	if err := s.db.View().Where("mixin_id = ?", mixinID).Take(&user).Error; err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
 		return nil, err
+	} else if errors.Is(err, gorm.ErrRecordNotFound) {
+		return nil, nil
 	}
 
 	return &user, nil
@@ -101,6 +103,8 @@ func (s *userStore) FindByPhone(_ context.Context, phone string) (*core.User, er
 	user := core.User{}
 	if err := s.db.View().Where("phone = ?", phone).Take(&user).Error; err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
 		return nil, err
+	} else if errors.Is(err, gorm.ErrRecordNotFound) {
+		return nil, nil
 	}
 	return &user, nil
 }
@@ -117,6 +121,8 @@ func (s *userStore) FindByName(_ context.Context, name string) (*core.User, erro
 	user := core.User{}
 	if err := s.db.View().Where("name = ?", name).Take(&user).Error; err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
 		return nil, err
+	} else if errors.Is(err, gorm.ErrRecordNotFound) {
+		return nil, nil
 	}
 
 	return &user, nil
@@ -125,6 +131,8 @@ func (s *userStore) FindByUserID(_ context.Context, user_id string) (*core.User,
 	user := core.User{}
 	if err := s.db.View().Where("user_id = ?", user_id).Take(&user).Error; err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
 		return nil, err
+	} else if errors.Is(err, gorm.ErrRecordNotFound) {
+		return nil, nil
 	}
 
 	return &user, nil
@@ -143,6 +151,8 @@ func (s *userStore) FindByUserIDForMe(_ context.Context, user_id string) (*core.
 	user := core.UserForMe{}
 	if err := s.db.View().Model(&core.User{}).Where("user_id = ?", user_id).Find(&user).Error; err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
 		return nil, err
+	} else if errors.Is(err, gorm.ErrRecordNotFound) {
+		return nil, nil
 	}
 
 	return &user, nil
