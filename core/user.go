@@ -67,7 +67,7 @@ type (
 
 	UserService interface {
 		GetPhoneCode(ctx context.Context, phone string) error
-		SignUp(ctx context.Context, l_user *SignUpUser) (*User, string, error)
+		SignUpByPhone(ctx context.Context, l_user *SignUpUser) (*User, error)
 		// Login(ctx context.Context, token string) (*User, error)
 		Auth(ctx context.Context, login_user *LoginUser) (string, error)
 		GetMe(ctx context.Context, user_id string) (*User, error)

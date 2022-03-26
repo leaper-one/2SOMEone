@@ -43,7 +43,7 @@ func (a *UserService) SendPhoneCode(ctx context.Context, phone string) (string, 
 	request.PhoneNumbers = phone
 	request.SignName = "ABC商城"
 	request.TemplateCode = "SMS_205575254"
-	request.TemplateParam = "{\"code\":"+"\""+vcode+"\"}"
+	request.TemplateParam = "{\"code\":" + "\"" + vcode + "\"}"
 
 	respon, err := client.SendSms(request)
 	if err != nil {
@@ -54,11 +54,13 @@ func (a *UserService) SendPhoneCode(ctx context.Context, phone string) (string, 
 	return vcode, nil
 }
 
-func (a *UserService) SignUp(ctx context.Context, sign_user *core.SignUpUser) (*core.User, string, error) {
+func (a *UserService) SignUpByPhone(ctx context.Context, sign_user *core.SignUpUser) (*core.User, error) {
 	userStore := user.New(a.db)
 	user, err := userStore.FindByPhone(ctx, sign_user.Phone)
 	if err != nil {
-		return nil, "", err
+		return nil, err
+	} else if user == nil && err == nil {
+		return nil, errors.New("无此非正式用户")
 	}
 	// if code == user.Code {
 	if sign_user.Code == "000000" || sign_user.Code == user.Code { // TODO: 测试用
@@ -66,22 +68,21 @@ func (a *UserService) SignUp(ctx context.Context, sign_user *core.SignUpUser) (*
 		// user := &core.User{Email: email, Role: "formal", UserID: user_id.String(),Code: ""}
 		user.Password, _ = util.HashPassword(sign_user.Password)
 		// user.Role = "formal"
-		user.Name=user.Phone
+		user.Name = user.Phone
 		user.UserID = user_id.String()
 		user.Code = ""
 		err := userStore.Save(ctx, user)
 		if err != nil {
-			return nil, "", err
+			return nil, err
 		}
 		user.Role = "formal"
 		err = userStore.Save(ctx, user)
 		if err != nil {
-			return nil, "", err
+			return nil, err
 		}
-		token, _ := util.GenerateToken(user.UserID, time.Hour*7*24)
-		return user, token, nil
+		return user, nil
 	} else {
-		return nil, "", errors.New("验证码错误")
+		return nil, errors.New("验证码错误")
 	}
 }
 
@@ -91,6 +92,8 @@ func (a *UserService) Auth(ctx context.Context, login_user *core.LoginUser) (str
 	user, err := userStore.FindByPhone(ctx, login_user.Phone)
 	if err != nil {
 		return "", err
+	} else if user == nil && err == nil {
+		return "", errors.New("该手机号未绑定")
 	}
 	if util.CheckPasswordHash(login_user.Password, user.Password) {
 		token, err := util.GenerateToken(user.UserID, time.Hour*7*24)
@@ -105,21 +108,24 @@ func (a *UserService) Auth(ctx context.Context, login_user *core.LoginUser) (str
 func (a *UserService) GetMe(ctx context.Context, user_id string) (*core.UserForMe, error) {
 	userStore := user.New(a.db)
 	// user, err := userStore.FindByPhone(ctx, .Phone)
-	user,err:=userStore.FindByUserIDForMe(ctx, user_id)
+	user, err := userStore.FindByUserIDForMe(ctx, user_id)
 	if err != nil {
 		return nil, err
+	} else if user == nil && err == nil {
+		return nil, errors.New("无此用户")
 	}
 	return user, nil
 }
-
 
 func (a *UserService) VisitUser(ctx context.Context, user_name string) (*core.UserForShow, error) {
 	userStore := user.New(a.db)
 	user, err := userStore.FindByName(ctx, user_name)
 	if err != nil {
 		return nil, err
+	} else if user == nil && err == nil {
+		return nil, errors.New("无此用户")
 	}
-	user_for_show,err:=userStore.FindByUserIDForShow(ctx,user.UserID)
+	user_for_show, err := userStore.FindByUserIDForShow(ctx, user.UserID)
 	if err != nil {
 		return nil, err
 	}

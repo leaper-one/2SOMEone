@@ -23,14 +23,13 @@ type NoteService struct {
 	db *util.DB
 }
 
-func (n *NoteService) Create(ctx context.Context, tnote *core.Note,recipient_name string) error {
+func (n *NoteService) Create(ctx context.Context, tnote *core.Note, recipient_name string) error {
 	noteStore := note.New(n.db)
 	userStore := user.New(n.db)
 	ruser, err := userStore.FindByName(ctx, recipient_name)
 	if err != nil {
 		return err
-	}
-	if ruser.ID == 0 {
+	} else if ruser == nil && err == nil {
 		return errors.New("无此用户")
 	}
 	tnote.Recipient = ruser.UserID
@@ -68,4 +67,35 @@ func (n *NoteService) RecipientGet(ctx context.Context, offset, limit int, user_
 		return nil, 0, err
 	}
 	return notes, count, nil
+}
+
+func (n *NoteService) GetByID(ctx context.Context, note_id string) (*core.Note, error) {
+	noteStore := note.New(n.db)
+	userStore:= user.New(n.db)
+	note, err := noteStore.FindByNoteID(ctx, note_id)
+	if err != nil {
+		return nil, err
+	} else if note == nil && err == nil {
+		return nil, errors.New("无此 Note")
+	}
+
+	// 隐藏 user_id
+	sender,err:=userStore.FindByUserID(ctx,note.Sender)
+	if err != nil {
+		return nil, err
+	} else if sender==nil&&err==nil{
+		return nil, errors.New("无发送者")
+	}
+
+	recipient,err:=userStore.FindByUserID(ctx,note.Recipient)
+	if err != nil {
+		return nil, err
+	} else if sender==nil&&err==nil{
+		return nil, errors.New("无接收者")
+	}
+
+	note.Sender=sender.Name
+	note.Recipient=recipient.Name
+
+	return note, nil
 }
