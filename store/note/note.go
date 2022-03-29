@@ -77,13 +77,62 @@ func (s *noteStore) GetNotes(ctx context.Context, offset, limit int, sender, rec
 	} else if recipient != "" && sender == "" {
 		notedb = s.db.View().Where(&core.Note{Recipient: recipient}).Model(&core.Note{})
 	} else if recipient == "" && sender == "" {
-		return nil, 0, errors.New("未来指定对象")
+		return nil, 0, errors.New("未指定对象")
 	}
 	var count int64
 	notedb.Count(&count) //总行数
 
 	notes := []*core.Note{}
 	notedb.Offset((offset - 1) * limit).Limit(limit).Find(&notes)
+
+	return notes, count, nil
+}
+
+func (s *noteStore) GetReceived(ctx context.Context, offset, limit int, user_id string) ([]*core.Note, int64, error) {
+	notedb := s.db.View().Where(&core.Note{Recipient: user_id}).Model(&core.Note{})
+	if notedb.Error != nil {
+		return nil, 0, notedb.Error
+	} else if errors.Is(notedb.Error, gorm.ErrRecordNotFound) {
+		return nil, 0, nil
+	}
+	var count int64
+	notedb.Count(&count) //总行数
+
+	notes := []*core.Note{}
+	err := notedb.Offset((offset - 1) * limit).Limit(limit).Find(&notes).Error
+	if err != nil {
+		return nil, 0, err
+	} else if errors.Is(err, gorm.ErrRecordNotFound) {
+		return nil, 0, nil
+	}
+
+	for _, note := range notes {
+		note.ForRead()
+	}
+	return notes, count, nil
+}
+
+func (s *noteStore) GetSent(ctx context.Context, offset, limit int, user_id string) ([]*core.Note, int64, error) {
+	notedb := s.db.View().Where(&core.Note{Sender: user_id}).Model(&core.Note{})
+	if notedb.Error != nil {
+		return nil, 0, notedb.Error
+	} else if errors.Is(notedb.Error, gorm.ErrRecordNotFound) {
+		return nil, 0, nil
+	}
+	var count int64
+	notedb.Count(&count) //总行数
+
+	notes := []*core.Note{}
+	err := notedb.Offset((offset - 1) * limit).Limit(limit).Find(&notes).Error
+	if err != nil {
+		return nil, 0, err
+	} else if errors.Is(err, gorm.ErrRecordNotFound) {
+		return nil, 0, nil
+	}
+
+	for _, note := range notes {
+		note.ForRead()
+	}
 
 	return notes, count, nil
 }

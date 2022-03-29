@@ -8,6 +8,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
@@ -15,8 +16,8 @@ import (
 func main() {
 	// baseapi := "https://imgapi.leaper.one"
 	dbc := util.OpenDB("./2-some-one.db")
-	// gin.SetMode(gin.DebugMode)
-	gin.SetMode(gin.ReleaseMode)
+	gin.SetMode(gin.DebugMode)
+	// gin.SetMode(gin.ReleaseMode)
 
 	userService := service.NewUserService(dbc)
 	noteService := service.NewNoteService(dbc)
@@ -179,6 +180,56 @@ func main() {
 			return
 		}
 		c.JSON(http.StatusOK, note)
+
+	})
+
+	r.GET("/notes/received/", middlewares.JWTAuthMiddleware(), func(c *gin.Context) {
+		ctx := context.Background()
+		user_id := c.MustGet("user_id")
+		offset, _ := strconv.Atoi(c.DefaultQuery("offset", "1"))
+		limit, _ := strconv.Atoi(c.DefaultQuery("limit", "20"))
+		notes, count, err := noteService.RecipientGet(ctx, offset, limit, user_id.(string))
+		if err != nil {
+			c.JSON(http.StatusOK, gin.H{
+				"code": 2002,
+				"msg": err.Error(),
+			})
+			return
+		}
+		c.JSON(http.StatusOK, gin.H{
+			"code": 2000,
+			"msg": "成功",
+			"count": count,
+			"notes": notes,
+			"offset": offset,
+			"limit": limit,
+		})
+		// c.String(http.StatusOK,"yes")
+	})
+
+	r.GET("/notes/sent", middlewares.JWTAuthMiddleware(), func(c *gin.Context) {
+		ctx := context.Background()
+		user_id := c.MustGet("user_id")
+		offset_str:=c.DefaultQuery("offset", "1")
+		offset, _ := strconv.Atoi(offset_str)
+		limit_str:=c.DefaultQuery("limit", "20")
+		limit, _ := strconv.Atoi(limit_str)
+		notes, count, err := noteService.SenderGet(ctx, offset, limit, user_id.(string))
+		if err != nil {
+			c.JSON(http.StatusOK, gin.H{
+				"code": 2002,
+				"msg": err.Error(),
+			})
+			return
+		}
+		c.JSON(http.StatusOK, gin.H{
+			"code": 2000,
+			"msg": "成功",
+			"count": count,
+			"notes": notes,
+			"offset": offset,
+			"limit": limit,
+		})
 
 	})
 

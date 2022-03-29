@@ -37,6 +37,8 @@ type (
 		// FindByUserID(_ context.Context, user_id string) (*User, error)
 		DeleteByNoteID(ctx context.Context, note_id string) error
 		GetNotes(ctx context.Context, offset, limit int, sender, recipient string) ([]*Note, int64, error)
+		GetReceived(ctx context.Context, offset, limit int, user_id string) ([]*Note, int64, error)
+		GetSent(ctx context.Context, offset, limit int, user_id string) ([]*Note, int64, error)
 	}
 
 	NoteService interface {
