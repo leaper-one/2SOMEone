@@ -16,8 +16,8 @@ import (
 func main() {
 	// baseapi := "https://imgapi.leaper.one"
 	dbc := util.OpenDB("./2-some-one.db")
-	gin.SetMode(gin.DebugMode)
-	// gin.SetMode(gin.ReleaseMode)
+	// gin.SetMode(gin.DebugMode)
+	gin.SetMode(gin.ReleaseMode)
 
 	userService := service.NewUserService(dbc)
 	noteService := service.NewNoteService(dbc)
