@@ -19,18 +19,20 @@ type userStore struct {
 
 func toUpdateParams(user *core.User) map[string]interface{} {
 	return map[string]interface{}{
-		"name":         user.Name,
-		"password":     user.Password,
-		"avatar":       user.Avatar,
-		"access_token": user.AccessToken,
-		"lang":         user.Lang,
-		"role":         user.Role,
-		"mixin_id":     user.MixinID,
-		"user_id":      user.UserID,
-		"buid":         user.Buid,
-		"email":        user.Email,
-		"phone":        user.Phone,
-		"code":         user.Code,
+		"name":          user.Name,
+		"password":      user.Password,
+		"avatar":        user.Avatar,
+		"access_token":  user.AccessToken,
+		"lang":          user.Lang,
+		"role":          user.Role,
+		"mixin_id":      user.MixinID,
+		"user_id":       user.UserID,
+		"buid":          user.Buid,
+		"live_room_id":  user.LiveRoomID,
+		"live_room_url": user.LiveRoomUrl,
+		"email":         user.Email,
+		"phone":         user.Phone,
+		"code":          user.Code,
 		// "balence":      user.Balence,
 	}
 }

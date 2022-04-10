@@ -15,7 +15,9 @@ type (
 		Email       string `gorm:"unique_index" json:"email,omitempty"`
 		Code        string `gorm:"size:6"`
 		Password    string `gorm:"size:20" json:"password,omitempty"`
-		Buid        string `json:"buid,omitempty"`
+		Buid        int    `json:"buid,omitempty"`
+		LiveRoomID  int    `json:"live_room_id,omitempty"`
+		LiveRoomUrl string `json:"live_room_url,omitempty"`
 		MixinID     string `gorm:"size:36;unique_index" json:"mixin_id,omitempty"`
 		Role        string `gorm:"size:24" json:"role,omitempty"`
 		Lang        string `gorm:"size:36;default:'zh'" json:"lang,omitempty"`
@@ -52,6 +54,20 @@ type (
 		Password string `json:"password"`
 	}
 
+	BiliUserInfo struct {
+		Code    int    `json:"code"`
+		Message string `json:"message"`
+		Data    struct {
+			Mid      int    `json:"mid,omitempty"`
+			Face     string `json:"face,omitempty"`
+			Name     string `json:"name,omitempty"`
+			LiveRoom struct {
+				RoomID int    `json:"roomid,omitempty"`
+				Url    string `json:"url,omitempty"`
+			} `json:"live_room,omitempty"`
+		} `json:"data,omitempty"`
+	}
+
 	UserStore interface {
 		Save(ctx context.Context, user *User) error
 		// SaveByEmail(_ context.Context, user *User) error
@@ -70,6 +86,7 @@ type (
 		SignUpByPhone(ctx context.Context, l_user *SignUpUser) (*User, error)
 		// Login(ctx context.Context, token string) (*User, error)
 		Auth(ctx context.Context, login_user *LoginUser) (string, error)
+		SetInfo(ctx context.Context, user_info *UserForMe) error
 		GetMe(ctx context.Context, user_id string) (*User, error)
 	}
 )

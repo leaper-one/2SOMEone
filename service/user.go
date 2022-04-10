@@ -5,9 +5,13 @@ import (
 	"2SOMEone/store/user"
 	"2SOMEone/util"
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
+	"io/ioutil"
 	"math/rand"
+	"net/http"
+	"net/url"
 	"time"
 
 	dysmsapi "github.com/aliyun/alibaba-cloud-sdk-go/services/dysmsapi"
@@ -103,6 +107,65 @@ func (a *UserService) Auth(ctx context.Context, login_user *core.LoginUser) (str
 		return token, nil
 	}
 	return "", errors.New("密码错误")
+}
+
+func (a *UserService) SetInfo(ctx context.Context, user_id string, user_info *core.UserForMe) error {
+	userStore := user.New(a.db)
+	user, err := userStore.FindByUserID(ctx, user_id)
+	if err != nil {
+		return err
+	} else if user == nil && err == nil {
+		return errors.New("无此用户")
+	}
+
+	if user_info.Name != "" {
+		user.Name = user_info.Name
+	}
+
+	if user_info.Avatar != "" {
+		user.Avatar = user_info.Avatar
+	}
+
+	if user_info.Buid != "" {
+		params := url.Values{}
+		Url, err := url.Parse("https://api.bilibili.com/x/space/acc/info")
+		if err != nil {
+			return err
+		}
+		params.Set("mid", user_info.Buid) //如果参数中有中文参数,这个方法会进行URLEncode
+		Url.RawQuery = params.Encode()
+		urlPath := Url.String()
+		resp, err := http.Get(urlPath)
+		if err != nil {
+			return err
+		}
+		defer resp.Body.Close()
+		body, _ := ioutil.ReadAll(resp.Body)
+		var bli_user_info core.BiliUserInfo
+		err = json.Unmarshal(body, &bli_user_info)
+		if err != nil {
+			return err
+		}
+
+		user.Buid = bli_user_info.Data.Mid
+		user.LiveRoomID = bli_user_info.Data.LiveRoom.RoomID
+		user.LiveRoomUrl = bli_user_info.Data.LiveRoom.Url
+
+		if user_info.Name == "" {
+			user.Name = bli_user_info.Data.Name
+		}
+
+		if user_info.Avatar == "" {
+			user.Avatar = bli_user_info.Data.Face
+		}
+	}
+	// fmt.Printf("user: %v\n", user)
+
+	err = userStore.Save(ctx, user)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func (a *UserService) GetMe(ctx context.Context, user_id string) (*core.UserForMe, error) {

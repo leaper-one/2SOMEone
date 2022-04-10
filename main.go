@@ -16,8 +16,8 @@ import (
 func main() {
 	// baseapi := "https://imgapi.leaper.one"
 	dbc := util.OpenDB("./2-some-one.db")
-	// gin.SetMode(gin.DebugMode)
-	gin.SetMode(gin.ReleaseMode)
+	gin.SetMode(gin.DebugMode)
+	// gin.SetMode(gin.ReleaseMode)
 
 	userService := service.NewUserService(dbc)
 	noteService := service.NewNoteService(dbc)
@@ -71,6 +71,32 @@ func main() {
 			"code":  2000,
 			"phone": user.Phone,
 			"msg":   "注册成功",
+		})
+	})
+
+	r.POST("/setinfo", middlewares.JWTAuthMiddleware(), func(c *gin.Context) {
+		ctx := context.Background()
+		user_id := c.MustGet("user_id").(string)
+		var setinfo core.UserForMe
+		err := c.ShouldBind(&setinfo)
+		if err != nil {
+			c.JSON(http.StatusOK, gin.H{
+				"code": 2001,
+				"msg":  "无效的参数",
+			})
+			return
+		}
+		err = userService.SetInfo(ctx, user_id, &setinfo)
+		if err != nil {
+			c.JSON(http.StatusOK, gin.H{
+				"code": 2002,
+				"msg":  err,
+			})
+			return
+		}
+		c.JSON(http.StatusOK, gin.H{
+			"code": 2000,
+			"msg":  "成功",
 		})
 	})
 
@@ -192,17 +218,17 @@ func main() {
 		if err != nil {
 			c.JSON(http.StatusOK, gin.H{
 				"code": 2002,
-				"msg": err.Error(),
+				"msg":  err.Error(),
 			})
 			return
 		}
 		c.JSON(http.StatusOK, gin.H{
-			"code": 2000,
-			"msg": "成功",
-			"count": count,
-			"notes": notes,
+			"code":   2000,
+			"msg":    "成功",
+			"count":  count,
+			"notes":  notes,
 			"offset": offset,
-			"limit": limit,
+			"limit":  limit,
 		})
 		// c.String(http.StatusOK,"yes")
 	})
@@ -210,25 +236,25 @@ func main() {
 	r.GET("/notes/sent", middlewares.JWTAuthMiddleware(), func(c *gin.Context) {
 		ctx := context.Background()
 		user_id := c.MustGet("user_id")
-		offset_str:=c.DefaultQuery("offset", "1")
+		offset_str := c.DefaultQuery("offset", "1")
 		offset, _ := strconv.Atoi(offset_str)
-		limit_str:=c.DefaultQuery("limit", "20")
+		limit_str := c.DefaultQuery("limit", "20")
 		limit, _ := strconv.Atoi(limit_str)
 		notes, count, err := noteService.SenderGet(ctx, offset, limit, user_id.(string))
 		if err != nil {
 			c.JSON(http.StatusOK, gin.H{
 				"code": 2002,
-				"msg": err.Error(),
+				"msg":  err.Error(),
 			})
 			return
 		}
 		c.JSON(http.StatusOK, gin.H{
-			"code": 2000,
-			"msg": "成功",
-			"count": count,
-			"notes": notes,
+			"code":   2000,
+			"msg":    "成功",
+			"count":  count,
+			"notes":  notes,
 			"offset": offset,
-			"limit": limit,
+			"limit":  limit,
 		})
 
 	})
