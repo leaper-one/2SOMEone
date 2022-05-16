@@ -1,0 +1,43 @@
+syntax = "proto3";
+
+package user;
+import public "google/protobuf/timestamp.proto";
+
+option go_package = "./grpc/user";
+
+service UserService {
+    rpc SentMessageCode(SentMessageCodeRequest) returns (SentMessageCodeResponse) {}
+    rpc SignUpByPhone (SignUpByPhoneRequest) returns (SignUpByPhoneResponse) {}
+
+}
+
+message Model {
+   uint32 id = 1;
+   // @inject_tag: json:"createAt"
+   google.protobuf.Timestamp createdAt = 2;
+   // @inject_tag: json:"updateAt"
+   google.protobuf.Timestamp updatedAt = 3;
+   // @inject_tag: gorm:"index" json:"-"
+   google.protobuf.Timestamp deletedAt = 4;
+}
+
+
+message SentMessageCodeRequest {
+    string phone = 1;
+}
+
+message SentMessageCodeResponse {
+    int32 code = 1;
+    string msg = 2;
+}
+
+message SignUpByPhoneRequest {
+    string phone = 1;
+    string code = 2;
+    string password = 3;
+}
+
+message SignUpByPhoneResponse {
+    int32 code = 1;
+    string msg = 2;
+}

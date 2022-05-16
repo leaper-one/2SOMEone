@@ -1,19 +1,29 @@
 package main
 
 import (
-	_ "2SOMEone/docs"
 	"2SOMEone/core"
+	_ "2SOMEone/docs"
 	"2SOMEone/middlewares"
 	"2SOMEone/service"
 	"2SOMEone/util"
 	"context"
 	"fmt"
+	"log"
+	"net"
 	"net/http"
 	"strconv"
 
-	gs "github.com/swaggo/gin-swagger"
-	"github.com/swaggo/files"
+	pb "2SOMEone/grpc/user"
+
 	"github.com/gin-gonic/gin"
+	"github.com/swaggo/files"
+	gs "github.com/swaggo/gin-swagger"
+	"google.golang.org/grpc"
+)
+
+const (
+	SUCCESS = 200
+	FAIL = 500
 )
 
 var (
@@ -21,6 +31,21 @@ var (
 	userService = service.NewUserService(dbc)
 	noteService = service.NewNoteService(dbc)
 )
+
+type UserService struct {
+	pb.UnimplementedUserServiceServer
+}
+	
+// Sent phone message code.
+func (s *UserService) SentMessageCode(ctx context.Context, in *pb.SentMessageCodeRequest) (*pb.SentMessageCodeResponse, error) {
+	fmt.Printf("SentMessageCode: %v\n", in)
+	code, err := userService.SendPhoneCode(ctx, in.Phone)
+	if err != nil {
+		return nil, err
+	}
+	fmt.Printf("code: %v\n", code)
+	return &pb.SentMessageCodeResponse{Code: SUCCESS, Msg: "success."}, nil
+}
 
 // @title BubbleBox
 // @version 1.0
@@ -34,14 +59,28 @@ var (
 // @BasePath 
 func main() {
 	// dbc := util.OpenDB("./2-some-one.db")
-	gin.SetMode(gin.DebugMode)
+	// gin.SetMode(gin.DebugMode)
 	// gin.SetMode(gin.ReleaseMode)
 
-	r := gin.Default()
-	r.Use(middlewares.Cors())
+	// r := gin.Default()
+	// r.Use(middlewares.Cors())
 
-	initRoutes(r)
-	r.Run(":3002")
+	// initRoutes(r)
+	// r.Run(":3002")
+
+
+	lis, err := net.Listen("tcp", fmt.Sprintf("localhost:%d", 50051))
+	if err != nil {
+		log.Fatalf("failed to listen: %v", err)
+	}
+	var opts []grpc.ServerOption
+	grpcServer := grpc.NewServer(opts...)
+	// pb.RegisterGreeterServer(grpcServer, newServer())
+	pb.RegisterUserServiceServer(grpcServer, &UserService{})
+	err = grpcServer.Serve(lis)
+	if err != nil {
+		return 
+	}
 }
 
 func initRoutes(r *gin.Engine) {
