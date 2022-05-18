@@ -1,26 +1,17 @@
 syntax = "proto3";
 
 package user;
-import public "google/protobuf/timestamp.proto";
+// import public "google/protobuf/timestamp.proto";
 
 option go_package = "./grpc/user";
 
 service UserService {
     rpc SentMessageCode(SentMessageCodeRequest) returns (SentMessageCodeResponse) {}
-    rpc SignUpByPhone (SignUpByPhoneRequest) returns (SignUpByPhoneResponse) {}
-
+    rpc SignUpByPhone(SignUpByPhoneRequest) returns (SignUpByPhoneResponse) {}
+    rpc SignInByPhone(SignInByPhoneRequest) returns (SignInByPhoneResponse) {}
+    rpc GetMe(GetMeRequest) returns (GetMeResponse) {}
+    rpc SetInfo(SetInfoRequest) returns (SetInfoResponse) {}
 }
-
-message Model {
-   uint32 id = 1;
-   // @inject_tag: json:"createAt"
-   google.protobuf.Timestamp createdAt = 2;
-   // @inject_tag: json:"updateAt"
-   google.protobuf.Timestamp updatedAt = 3;
-   // @inject_tag: gorm:"index" json:"-"
-   google.protobuf.Timestamp deletedAt = 4;
-}
-
 
 message SentMessageCodeRequest {
     string phone = 1;
@@ -38,6 +29,58 @@ message SignUpByPhoneRequest {
 }
 
 message SignUpByPhoneResponse {
+    int32 code = 1;
+    string msg = 2;
+}
+
+message SignInByPhoneRequest {
+    string phone = 1;
+    string password = 2;
+}
+
+message SignInByPhoneResponse {
+    int32 code = 1;
+    string msg = 2;
+    string token = 3;
+}
+
+message GetMeRequest {
+}
+
+message UserInfo {
+    string name = 1;
+    string phone = 2;
+    string email = 3;
+    string avatar = 4;
+    int64 buid = 5;
+}
+
+message BasicUser {
+    string user_id = 1;
+    UserInfo user_info =2;
+} 
+
+message UserForMe {
+    BasicUser basic_user = 1;
+    string live_room_url = 2;
+    int64 live_room_id = 3;
+    string mixin_id = 4;
+    string role = 5;
+}
+
+message GetMeResponse {
+    int32 code = 1;
+    string msg = 2;
+    UserForMe user = 3;
+}
+
+message SetInfoRequest {
+    string name = 1;
+    string buid = 2;
+    string avatar = 3;
+}
+
+message SetInfoResponse {
     int32 code = 1;
     string msg = 2;
 }

@@ -24,6 +24,9 @@ const _ = grpc.SupportPackageIsVersion7
 type UserServiceClient interface {
 	SentMessageCode(ctx context.Context, in *SentMessageCodeRequest, opts ...grpc.CallOption) (*SentMessageCodeResponse, error)
 	SignUpByPhone(ctx context.Context, in *SignUpByPhoneRequest, opts ...grpc.CallOption) (*SignUpByPhoneResponse, error)
+	SignInByPhone(ctx context.Context, in *SignInByPhoneRequest, opts ...grpc.CallOption) (*SignInByPhoneResponse, error)
+	GetMe(ctx context.Context, in *GetMeRequest, opts ...grpc.CallOption) (*GetMeResponse, error)
+	SetInfo(ctx context.Context, in *SetInfoRequest, opts ...grpc.CallOption) (*SetInfoResponse, error)
 }
 
 type userServiceClient struct {
@@ -52,12 +55,42 @@ func (c *userServiceClient) SignUpByPhone(ctx context.Context, in *SignUpByPhone
 	return out, nil
 }
 
+func (c *userServiceClient) SignInByPhone(ctx context.Context, in *SignInByPhoneRequest, opts ...grpc.CallOption) (*SignInByPhoneResponse, error) {
+	out := new(SignInByPhoneResponse)
+	err := c.cc.Invoke(ctx, "/user.UserService/SignInByPhone", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userServiceClient) GetMe(ctx context.Context, in *GetMeRequest, opts ...grpc.CallOption) (*GetMeResponse, error) {
+	out := new(GetMeResponse)
+	err := c.cc.Invoke(ctx, "/user.UserService/GetMe", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userServiceClient) SetInfo(ctx context.Context, in *SetInfoRequest, opts ...grpc.CallOption) (*SetInfoResponse, error) {
+	out := new(SetInfoResponse)
+	err := c.cc.Invoke(ctx, "/user.UserService/SetInfo", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // UserServiceServer is the server API for UserService service.
 // All implementations must embed UnimplementedUserServiceServer
 // for forward compatibility
 type UserServiceServer interface {
 	SentMessageCode(context.Context, *SentMessageCodeRequest) (*SentMessageCodeResponse, error)
 	SignUpByPhone(context.Context, *SignUpByPhoneRequest) (*SignUpByPhoneResponse, error)
+	SignInByPhone(context.Context, *SignInByPhoneRequest) (*SignInByPhoneResponse, error)
+	GetMe(context.Context, *GetMeRequest) (*GetMeResponse, error)
+	SetInfo(context.Context, *SetInfoRequest) (*SetInfoResponse, error)
 	mustEmbedUnimplementedUserServiceServer()
 }
 
@@ -70,6 +103,15 @@ func (UnimplementedUserServiceServer) SentMessageCode(context.Context, *SentMess
 }
 func (UnimplementedUserServiceServer) SignUpByPhone(context.Context, *SignUpByPhoneRequest) (*SignUpByPhoneResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SignUpByPhone not implemented")
+}
+func (UnimplementedUserServiceServer) SignInByPhone(context.Context, *SignInByPhoneRequest) (*SignInByPhoneResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SignInByPhone not implemented")
+}
+func (UnimplementedUserServiceServer) GetMe(context.Context, *GetMeRequest) (*GetMeResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetMe not implemented")
+}
+func (UnimplementedUserServiceServer) SetInfo(context.Context, *SetInfoRequest) (*SetInfoResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SetInfo not implemented")
 }
 func (UnimplementedUserServiceServer) mustEmbedUnimplementedUserServiceServer() {}
 
@@ -120,6 +162,60 @@ func _UserService_SignUpByPhone_Handler(srv interface{}, ctx context.Context, de
 	return interceptor(ctx, in, info, handler)
 }
 
+func _UserService_SignInByPhone_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SignInByPhoneRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).SignInByPhone(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/user.UserService/SignInByPhone",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).SignInByPhone(ctx, req.(*SignInByPhoneRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserService_GetMe_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetMeRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).GetMe(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/user.UserService/GetMe",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).GetMe(ctx, req.(*GetMeRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserService_SetInfo_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SetInfoRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).SetInfo(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/user.UserService/SetInfo",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).SetInfo(ctx, req.(*SetInfoRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // UserService_ServiceDesc is the grpc.ServiceDesc for UserService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -134,6 +230,18 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "SignUpByPhone",
 			Handler:    _UserService_SignUpByPhone_Handler,
+		},
+		{
+			MethodName: "SignInByPhone",
+			Handler:    _UserService_SignInByPhone_Handler,
+		},
+		{
+			MethodName: "GetMe",
+			Handler:    _UserService_GetMe_Handler,
+		},
+		{
+			MethodName: "SetInfo",
+			Handler:    _UserService_SetInfo_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

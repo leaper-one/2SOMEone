@@ -58,48 +58,48 @@ func (a *UserService) SendPhoneCode(ctx context.Context, phone string) (string, 
 	return vcode, nil
 }
 
-func (a *UserService) SignUpByPhone(ctx context.Context, sign_user *core.SignUpUser) (*core.User, error) {
+func (a *UserService) SignUpByPhone(ctx context.Context, phone, code, password string) error {
 	userStore := user.New(a.db)
-	user, err := userStore.FindByPhone(ctx, sign_user.Phone)
+	user, err := userStore.FindByPhone(ctx, phone)
 	if err != nil {
-		return nil, err
+		return  err
 	} else if user == nil && err == nil {
-		return nil, errors.New("无此非正式用户")
+		return errors.New("无此非正式用户")
 	}
 	// if code == user.Code {
-	if sign_user.Code == "000000" || sign_user.Code == user.Code { // TODO: 测试用
+	if code == "000000" || code == user.Code { // TODO: 测试用
 		user_id, _ := uuid.NewV1()
 		// user := &core.User{Email: email, Role: "formal", UserID: user_id.String(),Code: ""}
-		user.Password, _ = util.HashPassword(sign_user.Password)
+		user.Password, _ = util.HashPassword(password)
 		// user.Role = "formal"
 		user.Name = user.Phone
 		user.UserID = user_id.String()
 		user.Code = ""
 		err := userStore.Save(ctx, user)
 		if err != nil {
-			return nil, err
+			return err
 		}
 		user.Role = "formal"
 		err = userStore.Save(ctx, user)
 		if err != nil {
-			return nil, err
+			return err
 		}
-		return user, nil
+		return nil
 	} else {
-		return nil, errors.New("验证码错误")
+		return errors.New("验证码错误")
 	}
 }
 
 // func (a *UserService) Login(ctx context.Context, token string) (*core.User, error) {}
-func (a *UserService) Auth(ctx context.Context, login_user *core.LoginUser) (string, error) {
+func (a *UserService) Auth(ctx context.Context, phone, password string) (string, error) {
 	userStore := user.New(a.db)
-	user, err := userStore.FindByPhone(ctx, login_user.Phone)
+	user, err := userStore.FindByPhone(ctx, phone)
 	if err != nil {
 		return "", err
 	} else if user == nil && err == nil {
 		return "", errors.New("该手机号未绑定")
 	}
-	if util.CheckPasswordHash(login_user.Password, user.Password) {
+	if util.CheckPasswordHash(password, user.Password) {
 		token, err := util.GenerateToken(user.UserID, time.Hour*7*24)
 		if err != nil {
 			return "", err
@@ -147,8 +147,8 @@ func (a *UserService) SetInfo(ctx context.Context, user_id string, user_info *co
 			return err
 		}
 
-		user.Buid = bli_user_info.Data.Mid
-		user.LiveRoomID = bli_user_info.Data.LiveRoom.RoomID
+		user.Buid = int64(bli_user_info.Data.Mid)
+		user.LiveRoomID = int64(bli_user_info.Data.LiveRoom.RoomID)
 		user.LiveRoomUrl = bli_user_info.Data.LiveRoom.Url
 
 		if user_info.Name == "" {
@@ -168,10 +168,10 @@ func (a *UserService) SetInfo(ctx context.Context, user_id string, user_info *co
 	return nil
 }
 
-func (a *UserService) GetMe(ctx context.Context, user_id string) (*core.UserForMe, error) {
+func (a *UserService) GetMe(ctx context.Context, user_id string) (*core.User, error) {
 	userStore := user.New(a.db)
 	// user, err := userStore.FindByPhone(ctx, .Phone)
-	user, err := userStore.FindByUserIDForMe(ctx, user_id)
+	user, err := userStore.FindByUserID(ctx, user_id)
 	if err != nil {
 		return nil, err
 	} else if user == nil && err == nil {

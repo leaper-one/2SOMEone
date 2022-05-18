@@ -15,8 +15,8 @@ type (
 		Email       string `gorm:"unique_index" json:"email,omitempty"`
 		Code        string `gorm:"size:6"`
 		Password    string `gorm:"size:20" json:"password,omitempty"`
-		Buid        int    `json:"buid,omitempty"`
-		LiveRoomID  int    `json:"live_room_id,omitempty"`
+		Buid        int64  `json:"buid,omitempty"`
+		LiveRoomID  int64    `json:"live_room_id,omitempty"`
 		LiveRoomUrl string `json:"live_room_url,omitempty"`
 		MixinID     string `gorm:"size:36;unique_index" json:"mixin_id,omitempty"`
 		Role        string `gorm:"size:24" json:"role,omitempty"`
