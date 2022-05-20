@@ -56,8 +56,10 @@ func (s *UserService) SignInByPhone(ctx context.Context, in *pb.SignInByPhoneReq
 	return &pb.SignInByPhoneResponse{Code: SUCCESS, Msg: "success.", Token: token}, nil
 }
 
+// Get current user infomation
 func (s *UserService) GetMe(ctx context.Context, in *pb.GetMeRequest) (*pb.GetMeResponse, error) {
 	fmt.Printf("GetMe: %v\n", in)
+	// ctx contains auth_token, param it to get user_id
 	user_id, err := util.CheckAuth(ctx)
 	user, err := userService.GetMe(ctx, user_id)
 	if err != nil {

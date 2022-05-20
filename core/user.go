@@ -26,11 +26,13 @@ type (
 		// Balence     decimal.Decimal `gorm:"precision:2"`
 	}
 
+	// @Deprecated
 	UserForShow struct {
 		Name   string `gorm:"size:64; unique_index" json:"name,omitempty"`
 		Avatar string `gorm:"size:255" json:"avatar,omitempty"`
 	}
 
+	// @Deprecated
 	UserForMe struct {
 		Name   string `gorm:"size:64; unique_index" json:"name,omitempty"`
 		Phone  string `gorm:"size:14;index" json:"phone,omitempty"`
@@ -41,6 +43,7 @@ type (
 		Avatar string `gorm:"size:255" json:"avatar,omitempty"`
 	}
 
+	// @Deprecated
 	LoginUser struct {
 		Phone string `json:"phone"`
 		Code  string `json:"code,omitempty"`
@@ -48,6 +51,7 @@ type (
 		Password string `json:"password,omitempty"`
 	}
 
+	// @Deprecated
 	SignUpUser struct {
 		Phone    string `json:"phone,omitempty"`
 		Code     string `json:"code,omitempty"`

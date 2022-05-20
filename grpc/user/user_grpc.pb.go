@@ -25,7 +25,7 @@ type UserServiceClient interface {
 	SentMessageCode(ctx context.Context, in *SentMessageCodeRequest, opts ...grpc.CallOption) (*SentMessageCodeResponse, error)
 	SignUpByPhone(ctx context.Context, in *SignUpByPhoneRequest, opts ...grpc.CallOption) (*SignUpByPhoneResponse, error)
 	SignInByPhone(ctx context.Context, in *SignInByPhoneRequest, opts ...grpc.CallOption) (*SignInByPhoneResponse, error)
-	// Get user infomation by metadata with auth token
+	// Get current user infomation by metadata with auth token
 	// jwt needed in metadata
 	GetMe(ctx context.Context, in *GetMeRequest, opts ...grpc.CallOption) (*GetMeResponse, error)
 	// jwt needed in metadata
@@ -92,7 +92,7 @@ type UserServiceServer interface {
 	SentMessageCode(context.Context, *SentMessageCodeRequest) (*SentMessageCodeResponse, error)
 	SignUpByPhone(context.Context, *SignUpByPhoneRequest) (*SignUpByPhoneResponse, error)
 	SignInByPhone(context.Context, *SignInByPhoneRequest) (*SignInByPhoneResponse, error)
-	// Get user infomation by metadata with auth token
+	// Get current user infomation by metadata with auth token
 	// jwt needed in metadata
 	GetMe(context.Context, *GetMeRequest) (*GetMeResponse, error)
 	// jwt needed in metadata

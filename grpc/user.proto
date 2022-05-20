@@ -10,7 +10,7 @@ service UserService {
     rpc SignUpByPhone(SignUpByPhoneRequest) returns (SignUpByPhoneResponse) {}
     rpc SignInByPhone(SignInByPhoneRequest) returns (SignInByPhoneResponse) {}
         
-    // Get user infomation by metadata with auth token
+    // Get current user infomation by metadata with auth token
     // jwt needed in metadata
     rpc GetMe(GetMeRequest) returns (GetMeResponse) {}
 
