@@ -9,7 +9,6 @@ import (
 	"net"
 
 	pb "2SOMEone/grpc/user"
-
 	"google.golang.org/grpc"
 )
 
@@ -33,7 +32,7 @@ func (s *UserService) SentMessageCode(ctx context.Context, in *pb.SentMessageCod
 	fmt.Printf("SentMessageCode: %v\n", in)
 	code, err := userService.SendPhoneCode(ctx, in.Phone)
 	if err != nil {
-		return nil, err
+		return &pb.SentMessageCodeResponse{Code: FAIL, Msg: err.Error()}, err
 	}
 	fmt.Printf("code: %v\n", code)
 	return &pb.SentMessageCodeResponse{Code: SUCCESS, Msg: "success."}, nil
@@ -43,7 +42,7 @@ func (s *UserService) SignUpByPhone(ctx context.Context, in *pb.SignUpByPhoneReq
 	fmt.Printf("SignUpByPhone: %v\n", in)
 	err := userService.SignUpByPhone(ctx, in.Phone, in.Code, in.Password)
 	if err != nil {
-		return nil, err
+		return &pb.SignUpByPhoneResponse{Code: FAIL, Msg: err.Error()}, err
 	}
 	return &pb.SignUpByPhoneResponse{Code: SUCCESS, Msg: "success."}, nil
 }
@@ -52,11 +51,49 @@ func (s *UserService) SignInByPhone(ctx context.Context, in *pb.SignInByPhoneReq
 	fmt.Printf("SignInByPhone: %v\n", in)
 	token, err := userService.Auth(ctx, in.Phone, in.Password)
 	if err != nil {
-		return nil, err
+		return &pb.SignInByPhoneResponse{Code: FAIL, Msg: err.Error(), Token: ""}, err
 	}
 	return &pb.SignInByPhoneResponse{Code: SUCCESS, Msg: "success.", Token: token}, nil
 }
 
+func (s *UserService) GetMe(ctx context.Context, in *pb.GetMeRequest) (*pb.GetMeResponse, error) {
+	fmt.Printf("GetMe: %v\n", in)
+	user_id, err := util.CheckAuth(ctx)
+	user, err := userService.GetMe(ctx, user_id)
+	if err != nil {
+		return &pb.GetMeResponse{Code: FAIL, Msg: err.Error()}, err
+	}
+
+	return &pb.GetMeResponse{Code: SUCCESS, Msg: "success.", User: &pb.UserForMe{
+		BasicUser: &pb.BasicUser{
+			UserId: user.UserID,
+			UserInfo: &pb.UserInfo{
+				Name:   user.Name,
+				Phone:  user.Phone,
+				Avatar: user.Avatar,
+				Email:  user.Email,
+				Buid:   user.Buid,
+			},
+		},
+		LiveRoomUrl: user.LiveRoomUrl,
+		LiveRoomId:  user.LiveRoomID,
+		MixinId:     user.MixinID,
+		Role:        user.Role,
+	}}, nil
+}
+
+func (s *UserService) SetInfo(ctx context.Context, in *pb.SetInfoRequest) (*pb.SetInfoResponse, error) {
+	fmt.Printf("SetInfo: %v\n", in)
+	user_id, err := util.CheckAuth(ctx)
+	if err != nil {
+		return &pb.SetInfoResponse{Code: FAIL, Msg: err.Error()}, err
+	}
+	err = userService.SetInfo(ctx, user_id, in.Name, in.Avatar, in.Buid)
+	if err != nil {
+		return &pb.SetInfoResponse{Code: FAIL, Msg: err.Error()}, err
+	}
+	return &pb.SetInfoResponse{Code: SUCCESS, Msg: "success."}, nil
+}
 func main() {
 
 	lis, err := net.Listen("tcp", fmt.Sprintf("localhost:%d", 50051))

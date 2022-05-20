@@ -109,7 +109,7 @@ func (a *UserService) Auth(ctx context.Context, phone, password string) (string,
 	return "", errors.New("密码错误")
 }
 
-func (a *UserService) SetInfo(ctx context.Context, user_id string, user_info *core.UserForMe) error {
+func (a *UserService) SetInfo(ctx context.Context, user_id, name, avatar, buid string) error {
 	userStore := user.New(a.db)
 	user, err := userStore.FindByUserID(ctx, user_id)
 	if err != nil {
@@ -118,21 +118,21 @@ func (a *UserService) SetInfo(ctx context.Context, user_id string, user_info *co
 		return errors.New("无此用户")
 	}
 
-	if user_info.Name != "" {
-		user.Name = user_info.Name
+	if name != "" {
+		user.Name = name
 	}
 
-	if user_info.Avatar != "" {
-		user.Avatar = user_info.Avatar
+	if avatar != "" {
+		user.Avatar = avatar
 	}
 
-	if user_info.Buid != "" {
+	if buid != "" {
 		params := url.Values{}
 		Url, err := url.Parse("https://api.bilibili.com/x/space/acc/info")
 		if err != nil {
 			return err
 		}
-		params.Set("mid", user_info.Buid) //如果参数中有中文参数,这个方法会进行URLEncode
+		params.Set("mid", buid) //如果参数中有中文参数,这个方法会进行URLEncode
 		Url.RawQuery = params.Encode()
 		urlPath := Url.String()
 		resp, err := http.Get(urlPath)
@@ -151,11 +151,11 @@ func (a *UserService) SetInfo(ctx context.Context, user_id string, user_info *co
 		user.LiveRoomID = int64(bli_user_info.Data.LiveRoom.RoomID)
 		user.LiveRoomUrl = bli_user_info.Data.LiveRoom.Url
 
-		if user_info.Name == "" {
+		if name == "" {
 			user.Name = bli_user_info.Data.Name
 		}
 
-		if user_info.Avatar == "" {
+		if avatar == "" {
 			user.Avatar = bli_user_info.Data.Face
 		}
 	}
