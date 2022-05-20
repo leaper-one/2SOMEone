@@ -9,7 +9,12 @@ service UserService {
     rpc SentMessageCode(SentMessageCodeRequest) returns (SentMessageCodeResponse) {}
     rpc SignUpByPhone(SignUpByPhoneRequest) returns (SignUpByPhoneResponse) {}
     rpc SignInByPhone(SignInByPhoneRequest) returns (SignInByPhoneResponse) {}
+        
+    // Get user infomation by metadata with auth token
+    // jwt needed in metadata
     rpc GetMe(GetMeRequest) returns (GetMeResponse) {}
+
+    // jwt needed in metadata
     rpc SetInfo(SetInfoRequest) returns (SetInfoResponse) {}
 }
 

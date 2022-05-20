@@ -54,6 +54,9 @@ func (a *UserService) SendPhoneCode(ctx context.Context, phone string) (string, 
 		return "", err
 	}
 	fmt.Printf("respon: %+v\n", respon)
+	if respon.Code != "OK" {
+		return "", errors.New(respon.Message)
+	}
 
 	return vcode, nil
 }
