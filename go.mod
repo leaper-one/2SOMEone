@@ -13,8 +13,6 @@ require (
 	github.com/mailru/easyjson v0.7.7 // indirect
 	github.com/shopspring/decimal v1.3.1
 	github.com/sirupsen/logrus v1.8.1
-	github.com/swaggo/files v0.0.0-20210815190702-a29dd2bc99b2
-	github.com/swaggo/gin-swagger v1.4.3
 	github.com/swaggo/swag v1.8.1
 	golang.org/x/crypto v0.0.0-20220315160706-3147a52a75dd
 	golang.org/x/net v0.0.0-20220513224357-95641704303c // indirect
