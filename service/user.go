@@ -35,19 +35,34 @@ func (a *UserService) SendPhoneCode(ctx context.Context, phone string) (string, 
 	if err != nil {
 		return "", err
 	}
+
 	request := dysmsapi.CreateSendSmsRequest()
 	request.Scheme = "https"
 
 	rnd := rand.New(rand.NewSource(time.Now().UnixNano()))
 	vcode := fmt.Sprintf("%06v", rnd.Int31n(1000000)) // store
 
-	userStore := user.New(a.db)
-	go userStore.Save(ctx, &core.User{Phone: phone, Code: vcode, Role: "informal"})
-
 	request.PhoneNumbers = phone
 	request.SignName = "ABC商城"
 	request.TemplateCode = "SMS_205575254"
-	request.TemplateParam = "{\"code\":" + "\"" + vcode + "\"}"
+
+	userStore := user.New(a.db)
+	user, err := userStore.FindByPhone(ctx, phone)
+	if err != nil {
+		return "", err
+	}
+	// If user does not exist, create a new one
+	if user == nil && err == nil {
+		request.TemplateParam = "{\"code\":" + "\"" + vcode + "\"}"
+		go userStore.Save(ctx, &core.User{Phone: phone, Code: vcode, Role: "informal"})
+	} else { // If user exists, and code does not exit, update the code
+		if user.Code == "" {
+			request.TemplateParam = "{\"code\":" + "\"" + vcode + "\"}"
+			go userStore.Save(ctx, &core.User{Phone: phone, Code: vcode})
+		} else { // If code exits, resend it
+			request.TemplateParam = "{\"code\":" + "\"" + user.Code + "\"}"
+		}
+	}
 
 	respon, err := client.SendSms(request)
 	if err != nil {
@@ -65,7 +80,7 @@ func (a *UserService) SignUpByPhone(ctx context.Context, phone, code, password s
 	userStore := user.New(a.db)
 	user, err := userStore.FindByPhone(ctx, phone)
 	if err != nil {
-		return  err
+		return err
 	} else if user == nil && err == nil {
 		return errors.New("无此非正式用户")
 	}

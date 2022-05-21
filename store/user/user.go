@@ -59,7 +59,7 @@ func (s *userStore) Save(_ context.Context, user *core.User) error {
 	return s.db.Tx(func(tx *util.DB) error {
 		var rows int64
 		var err error
-		if user.Role == "informal" {
+		if user.UserID == "" {
 			rows, err = updateByPhone(tx, user)
 		} else {
 			rows, err = update(tx, user)
