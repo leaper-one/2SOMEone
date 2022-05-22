@@ -6,86 +6,141 @@ package user;
 option go_package = "./grpc/user";
 
 service UserService {
+    // 向手机号发送验证码
     rpc SentMessageCode(SentMessageCodeRequest) returns (SentMessageCodeResponse) {}
+    // 通过手机号注册，需要验证码
     rpc SignUpByPhone(SignUpByPhoneRequest) returns (SignUpByPhoneResponse) {}
+    // 通过手机号登录
     rpc SignInByPhone(SignInByPhoneRequest) returns (SignInByPhoneResponse) {}
         
-    // Get current user infomation by metadata with auth token
-    // jwt needed in metadata
+    /* Get current user infomation by metadata with auth token
+     * jwt needed in metadata
+     */
     rpc GetMe(GetMeRequest) returns (GetMeResponse) {}
 
     // jwt needed in metadata
     rpc SetInfo(SetInfoRequest) returns (SetInfoResponse) {}
+
+    /* Send message code to current user
+     * jwt needed in metadata
+     */
+    rpc SendMsgCodeToCurrentUser(SendMsgCodeToCurrentUserRequest) returns (SendMsgCodeToCurrentUserResponse) {}
+
+    /* Check message code
+     * jwt needed in metadata
+     */
+    rpc CheckMsgCode(CheckMsgCodeRequest) returns (CheckMsgCodeResponse) {}
 }
 
 message SentMessageCodeRequest {
+    // 手机号
     string phone = 1;
 }
 
 message SentMessageCodeResponse {
+    // 状态码
     int32 code = 1;
+    // 返回信息
     string msg = 2;
 }
 
 message SignUpByPhoneRequest {
+    // 手机号
     string phone = 1;
+    // 验证码
     string code = 2;
+    // 密码
     string password = 3;
 }
 
 message SignUpByPhoneResponse {
+    // 状态码
     int32 code = 1;
+    // 返回信息
     string msg = 2;
 }
 
 message SignInByPhoneRequest {
+    // 手机号
     string phone = 1;
+    // 密码
     string password = 2;
 }
 
 message SignInByPhoneResponse {
+    // 状态码
     int32 code = 1;
+    // 返回信息
     string msg = 2;
+    // token
     string token = 3;
 }
 
 message GetMeRequest {
 }
 
+// 用户信息
 message UserInfo {
+    // 用户名
     string name = 1;
+    // 手机号
     string phone = 2;
+    // 邮箱
     string email = 3;
+    // 头像
     string avatar = 4;
+    // B站UID
     int64 buid = 5;
 }
 
+// 基础用户信息
 message BasicUser {
+    // 用户 UUID
     string user_id = 1;
+    // 用户信息
     UserInfo user_info =2;
 } 
 
+// 用户信息
 message UserForMe {
+    // 基础用户信息
     BasicUser basic_user = 1;
+    // 直播间 URL
     string live_room_url = 2;
+    // 直播间 ID
     int64 live_room_id = 3;
+    // Mixin ID
     string mixin_id = 4;
+    // 角色
     string role = 5;
 }
 
 message GetMeResponse {
+    // 状态码
     int32 code = 1;
+    // 返回信息
     string msg = 2;
+    // 用户信息
     UserForMe user = 3;
 }
 
 message SetInfoRequest {
+    // 用户名
     string name = 1;
+    // B站 UID
     string buid = 2;
+    // 头像
     string avatar = 3;
 }
 
 message SetInfoResponse {
+    // 状态码
     int32 code = 1;
+    // 返回信息
     string msg = 2;
+}
+
+message SendMsgCodeToCurrentUserRequest {
+    // 手机号
+    string phone = 1;
 }
