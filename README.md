@@ -5,18 +5,8 @@
 ### Start a UserService grpc service  
 > Defalut port: `http://127.0.0.1:50051`  
 
-win:
-```sh
-$ make user.exe
-$ .\user\user.exe
-```  
-linux:
-```sh
-$ make user
-$ ./user/user
-```  
-or  
 ```sh  
+$ make all
 $ cd user
-$ go build
+$ ls
 ```  
