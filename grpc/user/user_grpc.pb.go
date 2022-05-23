@@ -22,8 +22,11 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type UserServiceClient interface {
+	// 向手机号发送验证码
 	SentMessageCode(ctx context.Context, in *SentMessageCodeRequest, opts ...grpc.CallOption) (*SentMessageCodeResponse, error)
+	// 通过手机号注册，需要验证码
 	SignUpByPhone(ctx context.Context, in *SignUpByPhoneRequest, opts ...grpc.CallOption) (*SignUpByPhoneResponse, error)
+	// 通过手机号登录
 	SignInByPhone(ctx context.Context, in *SignInByPhoneRequest, opts ...grpc.CallOption) (*SignInByPhoneResponse, error)
 	// Get current user infomation by metadata with auth token
 	// jwt needed in metadata
@@ -89,8 +92,11 @@ func (c *userServiceClient) SetInfo(ctx context.Context, in *SetInfoRequest, opt
 // All implementations must embed UnimplementedUserServiceServer
 // for forward compatibility
 type UserServiceServer interface {
+	// 向手机号发送验证码
 	SentMessageCode(context.Context, *SentMessageCodeRequest) (*SentMessageCodeResponse, error)
+	// 通过手机号注册，需要验证码
 	SignUpByPhone(context.Context, *SignUpByPhoneRequest) (*SignUpByPhoneResponse, error)
+	// 通过手机号登录
 	SignInByPhone(context.Context, *SignInByPhoneRequest) (*SignInByPhoneResponse, error)
 	// Get current user infomation by metadata with auth token
 	// jwt needed in metadata

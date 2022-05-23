@@ -24,12 +24,12 @@ service UserService {
     /* Send message code to current user
      * jwt needed in metadata
      */
-    rpc SendMsgCodeToCurrentUser(SendMsgCodeToCurrentUserRequest) returns (SendMsgCodeToCurrentUserResponse) {}
+    // rpc SendMsgCodeToCurrentUser(SendMsgCodeToCurrentUserRequest) returns (SendMsgCodeToCurrentUserResponse) {}
 
     /* Check message code
      * jwt needed in metadata
      */
-    rpc CheckMsgCode(CheckMsgCodeRequest) returns (CheckMsgCodeResponse) {}
+    // rpc CheckMsgCode(CheckMsgCodeRequest) returns (CheckMsgCodeResponse) {}
 }
 
 message SentMessageCodeRequest {
@@ -42,6 +42,8 @@ message SentMessageCodeResponse {
     int32 code = 1;
     // 返回信息
     string msg = 2;
+    // 验证码
+    uint32 msg_id =3;
 }
 
 message SignUpByPhoneRequest {
@@ -51,6 +53,8 @@ message SignUpByPhoneRequest {
     string code = 2;
     // 密码
     string password = 3;
+    // 短信ID
+    uint32 msg_id = 4;
 }
 
 message SignUpByPhoneResponse {
@@ -101,27 +105,13 @@ message BasicUser {
     UserInfo user_info =2;
 } 
 
-// 用户信息
-message UserForMe {
-    // 基础用户信息
-    BasicUser basic_user = 1;
-    // 直播间 URL
-    string live_room_url = 2;
-    // 直播间 ID
-    int64 live_room_id = 3;
-    // Mixin ID
-    string mixin_id = 4;
-    // 角色
-    string role = 5;
-}
-
 message GetMeResponse {
     // 状态码
     int32 code = 1;
     // 返回信息
     string msg = 2;
     // 用户信息
-    UserForMe user = 3;
+    BasicUser user = 3;
 }
 
 message SetInfoRequest {
@@ -138,9 +128,4 @@ message SetInfoResponse {
     int32 code = 1;
     // 返回信息
     string msg = 2;
-}
-
-message SendMsgCodeToCurrentUserRequest {
-    // 手机号
-    string phone = 1;
 }

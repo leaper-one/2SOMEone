@@ -25,7 +25,7 @@ type NoteService struct {
 
 func (n *NoteService) Create(ctx context.Context, tnote *core.Note, recipient_name string) error {
 	noteStore := note.New(n.db)
-	userStore := user.New(n.db)
+	userStore := user.NewUserStore(n.db)
 	ruser, err := userStore.FindByName(ctx, recipient_name)
 	if err != nil {
 		return err
@@ -75,7 +75,7 @@ func (n *NoteService) RecipientGet(ctx context.Context, offset, limit int, user_
 
 func (n *NoteService) GetByID(ctx context.Context, note_id string) (*core.Note, error) {
 	noteStore := note.New(n.db)
-	userStore := user.New(n.db)
+	userStore := user.NewUserStore(n.db)
 	note, err := noteStore.FindByNoteID(ctx, note_id)
 	if err != nil {
 		return nil, err

@@ -3,18 +3,16 @@ package service
 import (
 	"2SOMEone/core"
 	"2SOMEone/store/user"
+	"2SOMEone/store/bili_user"
 	"2SOMEone/util"
 	"context"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"io/ioutil"
-	"math/rand"
 	"net/http"
 	"net/url"
 	"time"
 
-	dysmsapi "github.com/aliyun/alibaba-cloud-sdk-go/services/dysmsapi"
 	"github.com/gofrs/uuid"
 )
 
@@ -30,87 +28,35 @@ type UserService struct {
 	db *util.DB
 }
 
-func (a *UserService) SendPhoneCode(ctx context.Context, phone string) (string, error) {
-	client, err := dysmsapi.NewClientWithAccessKey("cn-hangzhou", "LTAI5tREMX8wtEQoaSgGki4Z", "YGtpz8dZWTrWQqDm4fk4NlsaFHJNCW")
-	if err != nil {
-		return "", err
-	}
-
-	request := dysmsapi.CreateSendSmsRequest()
-	request.Scheme = "https"
-
-	rnd := rand.New(rand.NewSource(time.Now().UnixNano()))
-	vcode := fmt.Sprintf("%06v", rnd.Int31n(1000000)) // store
-
-	request.PhoneNumbers = phone
-	request.SignName = "ABC商城"
-	request.TemplateCode = "SMS_205575254"
-
-	userStore := user.New(a.db)
-	user, err := userStore.FindByPhone(ctx, phone)
-	if err != nil {
-		return "", err
-	}
-	// If user does not exist, create a new one
-	if user == nil && err == nil {
-		request.TemplateParam = "{\"code\":" + "\"" + vcode + "\"}"
-		go userStore.Save(ctx, &core.BasicUser{Phone: phone, Code: vcode, Role: "informal"})
-	} else { // If user exists, and code does not exit, update the code
-		if user.Code == "" {
-			request.TemplateParam = "{\"code\":" + "\"" + vcode + "\"}"
-			go userStore.Save(ctx, &core.BasicUser{Phone: phone, Code: vcode})
-		} else { // If code exits, resend it
-			request.TemplateParam = "{\"code\":" + "\"" + user.Code + "\"}"
-		}
-	}
-
-	respon, err := client.SendSms(request)
-	if err != nil {
-		return "", err
-	}
-	fmt.Printf("respon: %+v\n", respon)
-	if respon.Code != "OK" {
-		return "", errors.New(respon.Message)
-	}
-
-	return vcode, nil
-}
-
-func (a *UserService) SignUpByPhone(ctx context.Context, phone, code, password string) error {
-	userStore := user.New(a.db)
-	user, err := userStore.FindByPhone(ctx, phone)
+func (a *UserService) SignUpByPhone(ctx context.Context, phone, code, password string, msg_id uint) error {
+	// 校验手机验证码
+	ok, err := NewMsgService(a.db).CheckPhoneCode(ctx, phone, code, msg_id)
 	if err != nil {
 		return err
-	} else if user == nil && err == nil {
-		return errors.New("无此非正式用户")
 	}
-	// if code == user.Code {
-	if code == "000000" || code == user.Code { // TODO: 测试用
-		user_id, _ := uuid.NewV1()
-		// user := &core.User{Email: email, Role: "formal", UserID: user_id.String(),Code: ""}
-		user.Password, _ = util.HashPassword(password)
-		// user.Role = "formal"
-		user.Name = user.Phone
-		user.UserID = user_id.String()
-		user.Code = ""
-		err := userStore.Save(ctx, user)
-		if err != nil {
-			return err
-		}
-		user.Role = "formal"
-		err = userStore.Save(ctx, user)
-		if err != nil {
-			return err
-		}
-		return nil
-	} else {
+	if !ok {
 		return errors.New("验证码错误")
 	}
+
+	// 创建用户
+	userStore := user.NewUserStore(a.db)
+	user_id, _ := uuid.NewV1()
+
+	user := &core.BasicUser{UserID: user_id.String(), Phone: phone, Name: phone}
+
+	// 密码加密
+	user.Password, _ = util.HashPassword(password)
+
+	err = userStore.Save(ctx, user)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
-// func (a *UserService) Login(ctx context.Context, token string) (*core.User, error) {}
+// func (a *UserService) Login(ctx context.Context, token string) (*core.BasicUser, error) {}
 func (a *UserService) Auth(ctx context.Context, phone, password string) (string, error) {
-	userStore := user.New(a.db)
+	userStore := user.NewUserStore(a.db)
 	user, err := userStore.FindByPhone(ctx, phone)
 	if err != nil {
 		return "", err
@@ -128,7 +74,7 @@ func (a *UserService) Auth(ctx context.Context, phone, password string) (string,
 }
 
 func (a *UserService) SetInfo(ctx context.Context, user_id, name, avatar, buid string) error {
-	userStore := user.New(a.db)
+	userStore := user.NewUserStore(a.db)
 	user, err := userStore.FindByUserID(ctx, user_id)
 	if err != nil {
 		return err
@@ -165,9 +111,14 @@ func (a *UserService) SetInfo(ctx context.Context, user_id, name, avatar, buid s
 			return err
 		}
 
-		user.Buid = int64(bli_user_info.Data.Mid)
-		user.LiveRoomID = int64(bli_user_info.Data.LiveRoom.RoomID)
-		user.LiveRoomUrl = bli_user_info.Data.LiveRoom.Url
+		// 写入 BiliUser
+		biliUserStore := bili_user.NewBiliUserStore(a.db)
+		biliUserStore.Save(ctx, &core.BiliUser{
+			UserID:      user_id,
+			Buid:        int64(bli_user_info.Data.Mid),
+			LiveRoomID:  int64(bli_user_info.Data.LiveRoom.RoomID),
+			LiveRoomUrl: bli_user_info.Data.LiveRoom.Url,
+		})
 
 		if name == "" {
 			user.Name = bli_user_info.Data.Name
@@ -177,7 +128,6 @@ func (a *UserService) SetInfo(ctx context.Context, user_id, name, avatar, buid s
 			user.Avatar = bli_user_info.Data.Face
 		}
 	}
-	// fmt.Printf("user: %v\n", user)
 
 	err = userStore.Save(ctx, user)
 	if err != nil {
@@ -187,7 +137,7 @@ func (a *UserService) SetInfo(ctx context.Context, user_id, name, avatar, buid s
 }
 
 func (a *UserService) GetMe(ctx context.Context, user_id string) (*core.BasicUser, error) {
-	userStore := user.New(a.db)
+	userStore := user.NewUserStore(a.db)
 	// user, err := userStore.FindByPhone(ctx, .Phone)
 	user, err := userStore.FindByUserID(ctx, user_id)
 	if err != nil {
@@ -196,19 +146,4 @@ func (a *UserService) GetMe(ctx context.Context, user_id string) (*core.BasicUse
 		return nil, errors.New("无此用户")
 	}
 	return user, nil
-}
-
-func (a *UserService) VisitUser(ctx context.Context, user_name string) (*core.UserForShow, error) {
-	userStore := user.New(a.db)
-	user, err := userStore.FindByName(ctx, user_name)
-	if err != nil {
-		return nil, err
-	} else if user == nil && err == nil {
-		return nil, errors.New("无此用户")
-	}
-	user_for_show, err := userStore.FindByUserIDForShow(ctx, user.UserID)
-	if err != nil {
-		return nil, err
-	}
-	return user_for_show, nil
 }
