@@ -11,7 +11,7 @@ import (
 
 type DB struct {
 	write *gorm.DB
-	read *gorm.DB
+	read  *gorm.DB
 }
 
 func OpenDB(path string) *DB {
@@ -19,8 +19,8 @@ func OpenDB(path string) *DB {
 	if err != nil {
 		log.Panicln(err)
 	}
-	db.AutoMigrate(&core.User{},&core.Note{})
-	return &DB{write: db,read: db}
+	db.AutoMigrate(&core.BasicUser{}, &core.Note{})
+	return &DB{write: db, read: db}
 }
 
 func (db *DB) Update() *gorm.DB {
@@ -39,7 +39,7 @@ func (db *DB) Debug() *DB {
 }
 
 func (db *DB) Begin() *DB {
-	tx:=db.write.Begin()
+	tx := db.write.Begin()
 	return &DB{
 		write: tx,
 		read:  db.read,
