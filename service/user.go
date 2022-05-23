@@ -54,11 +54,11 @@ func (a *UserService) SendPhoneCode(ctx context.Context, phone string) (string, 
 	// If user does not exist, create a new one
 	if user == nil && err == nil {
 		request.TemplateParam = "{\"code\":" + "\"" + vcode + "\"}"
-		go userStore.Save(ctx, &core.User{Phone: phone, Code: vcode, Role: "informal"})
+		go userStore.Save(ctx, &core.BasicUser{Phone: phone, Code: vcode, Role: "informal"})
 	} else { // If user exists, and code does not exit, update the code
 		if user.Code == "" {
 			request.TemplateParam = "{\"code\":" + "\"" + vcode + "\"}"
-			go userStore.Save(ctx, &core.User{Phone: phone, Code: vcode})
+			go userStore.Save(ctx, &core.BasicUser{Phone: phone, Code: vcode})
 		} else { // If code exits, resend it
 			request.TemplateParam = "{\"code\":" + "\"" + user.Code + "\"}"
 		}
@@ -118,7 +118,7 @@ func (a *UserService) Auth(ctx context.Context, phone, password string) (string,
 		return "", errors.New("该手机号未绑定")
 	}
 	if util.CheckPasswordHash(password, user.Password) {
-		token, err := util.GenerateToken(user.UserID, time.Hour*7*24)
+		token, err := util.GenerateToken(user.UserID, user.Phone, time.Hour*7*24)
 		if err != nil {
 			return "", err
 		}
@@ -186,7 +186,7 @@ func (a *UserService) SetInfo(ctx context.Context, user_id, name, avatar, buid s
 	return nil
 }
 
-func (a *UserService) GetMe(ctx context.Context, user_id string) (*core.User, error) {
+func (a *UserService) GetMe(ctx context.Context, user_id string) (*core.BasicUser, error) {
 	userStore := user.New(a.db)
 	// user, err := userStore.FindByPhone(ctx, .Phone)
 	user, err := userStore.FindByUserID(ctx, user_id)

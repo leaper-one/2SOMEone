@@ -16,21 +16,21 @@ type AuthToken struct {
 }
 
 func (c AuthToken) GetRequestMetadata(ctx context.Context, uri ...string) (map[string]string, error) {
-    return map[string]string{
-        "authorization": c.Token,
-    }, nil
+	return map[string]string{
+		"authorization": c.Token,
+	}, nil
 }
 
 func (c AuthToken) RequireTransportSecurity() bool {
-    return false
+	return false
 }
- 
 
-func GenerateToken(user_id string, expireDuration time.Duration) (string, error) {
+func GenerateToken(user_id, phone string, expireDuration time.Duration) (string, error) {
 	expire := time.Now().Add(expireDuration)
 	// 将 uid，用户角色， 过期时间作为数据写入 token 中
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, LoginClaims{
 		UserID: user_id,
+		Phone:  phone,
 		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: expire.Unix(),
 			Issuer:    "LEAPERone",
@@ -80,7 +80,9 @@ func CheckAuth(ctx context.Context) (string, error) {
 
 	return claims.UserID, nil
 }
+
 type LoginClaims struct {
 	UserID string `json:"user_id"`
+	Phone  string `json:"phone"`
 	jwt.StandardClaims
 }
