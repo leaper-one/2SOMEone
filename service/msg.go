@@ -54,7 +54,10 @@ func (a *MsgService) SendPhoneCode(ctx context.Context, phone string) (string, u
 	}
 
 	msg := &core.Message{Type: 0, Phone: phone, Content: "", Code: vcode}
-	msgStore.Save(ctx, msg)
+	err = msgStore.Create(ctx, msg)
+	if err != nil {
+		return "", 0, err
+	}
 
 	return msg.Code, msg.ID, nil
 }

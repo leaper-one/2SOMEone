@@ -91,7 +91,7 @@ message UserInfo {
     string phone = 2;
     // 邮箱
     string email = 3;
-    // 头像
+    // 头像 URL
     string avatar = 4;
     // B站UID
     int64 buid = 5;

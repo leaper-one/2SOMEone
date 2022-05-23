@@ -15,6 +15,7 @@ type (
 	}
 
 	MessageStore interface {
+		Create(ctx context.Context, message *Message) error
 		Save(ctx context.Context, message *Message) error
 		Find(ctx context.Context, message_id uint, phone string) (*Message, error)
 	}

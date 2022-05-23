@@ -2,8 +2,8 @@ package service
 
 import (
 	"2SOMEone/core"
-	"2SOMEone/store/user"
 	"2SOMEone/store/bili_user"
+	"2SOMEone/store/user"
 	"2SOMEone/util"
 	"context"
 	"encoding/json"

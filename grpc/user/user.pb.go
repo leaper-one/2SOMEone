@@ -439,7 +439,7 @@ type UserInfo struct {
 	Phone string `protobuf:"bytes,2,opt,name=phone,proto3" json:"phone,omitempty"`
 	// 邮箱
 	Email string `protobuf:"bytes,3,opt,name=email,proto3" json:"email,omitempty"`
-	// 头像
+	// 头像 URL
 	Avatar string `protobuf:"bytes,4,opt,name=avatar,proto3" json:"avatar,omitempty"`
 	// B站UID
 	Buid int64 `protobuf:"varint,5,opt,name=buid,proto3" json:"buid,omitempty"`

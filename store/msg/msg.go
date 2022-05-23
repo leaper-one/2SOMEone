@@ -32,6 +32,14 @@ func updateByphone(db *util.DB, msg *core.Message) (int64, error) {
 	return tx.RowsAffected, tx.Error
 }
 
+// Create a new message
+func (m *msgStore) Create(ctx context.Context, msg *core.Message) error {
+	return m.db.Tx(func(tx *util.DB) error {
+		return tx.Update().Create(msg).Error
+	})
+}
+
+// Save message
 func (m *msgStore) Save(ctx context.Context, msg *core.Message) error {
 	return m.db.Tx(func(tx *util.DB) error {
 		var rows int64
@@ -50,7 +58,7 @@ func (m *msgStore) Save(ctx context.Context, msg *core.Message) error {
 // Find message by message_id
 func (m *msgStore) Find(_ context.Context, message_id uint, phone string) (*core.Message, error) {
 	msg := core.Message{}
-	if err := m.db.View().Where("message_id = ? AND phone = ?", message_id, phone).Take(&msg).Error; err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
+	if err := m.db.View().Where("id = ? AND phone = ?", message_id, phone).Take(&msg).Error; err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
 		return nil, err
 	} else if errors.Is(err, gorm.ErrRecordNotFound) {
 		return nil, nil
