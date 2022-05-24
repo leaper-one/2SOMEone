@@ -43,7 +43,7 @@ message SentMessageCodeResponse {
     // 返回信息
     string msg = 2;
     // 验证码
-    uint32 msg_id =3;
+    uint64 msg_id =3;
 }
 
 message SignUpByPhoneRequest {
@@ -54,7 +54,7 @@ message SignUpByPhoneRequest {
     // 密码
     string password = 3;
     // 短信ID
-    uint32 msg_id = 4;
+    uint64 msg_id = 4;
 }
 
 message SignUpByPhoneResponse {

@@ -15,7 +15,7 @@ const (
 )
 
 var (
-	dbc         = util.OpenDB("./2-some-one.db")
+	dbc         = util.OpenDB("./user.db")
 	userService = service.NewUserService(dbc)
 	msgService  = service.NewMsgService(dbc)
 )
@@ -31,7 +31,7 @@ func (s *UserService) SentMessageCode(ctx context.Context, in *pb.SentMessageCod
 	if err != nil {
 		return &pb.SentMessageCodeResponse{Code: FAIL, Msg: err.Error()}, err
 	}
-	return &pb.SentMessageCodeResponse{Code: SUCCESS, Msg: "success.", MsgId: uint32(msg_id)}, nil
+	return &pb.SentMessageCodeResponse{Code: SUCCESS, Msg: "success.", MsgId: msg_id}, nil
 }
 
 func (s *UserService) SignUpByPhone(ctx context.Context, in *pb.SignUpByPhoneRequest) (*pb.SignUpByPhoneResponse, error) {

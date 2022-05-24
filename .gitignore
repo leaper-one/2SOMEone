@@ -1,5 +1,6 @@
 __debug_bin.exe
 2-some-one.db
+*.db
 2SOMEone.exe
 /docs/*
 /.vscode/*

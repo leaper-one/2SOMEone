@@ -24,7 +24,7 @@ type MsgService struct {
 }
 
 // Send random code to phone via aliyun msg api
-func (a *MsgService) SendPhoneCode(ctx context.Context, phone string) (string, uint, error) {
+func (a *MsgService) SendPhoneCode(ctx context.Context, phone string) (string, uint64, error) {
 	// 初始化 msg store
 	msgStore := msg.New(a.db)
 	// 初始化阿里云短信服务客户端
@@ -59,7 +59,7 @@ func (a *MsgService) SendPhoneCode(ctx context.Context, phone string) (string, u
 		return "", 0, err
 	}
 
-	return msg.Code, msg.ID, nil
+	return msg.Code, uint64(msg.ID), nil
 }
 
 // CheckPhoneCode check random code with phone and msg_id
