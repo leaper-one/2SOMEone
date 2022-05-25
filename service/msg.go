@@ -13,6 +13,7 @@ import (
 	dysmsapi "github.com/aliyun/alibaba-cloud-sdk-go/services/dysmsapi"
 )
 
+// params: db, region_id, access_key_id, access_key_secret
 func NewMsgService(db *util.DB, msg_config ...string) *MsgService {
 	// 初始化阿里云短信服务客户端
 	if len(msg_config) > 0 {
