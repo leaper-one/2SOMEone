@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"net"
 
@@ -11,7 +10,8 @@ import (
 
 func main() {
 	// start server
-	lis, err := net.Listen("tcp", fmt.Sprintf("localhost:%d", 50051))
+	config := loadConfig("./config.yaml")
+	lis, err := net.Listen("tcp", config.GrpcSet.EndPoint)
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}

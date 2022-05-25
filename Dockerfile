@@ -1,25 +1,25 @@
-# 基础镜像
-FROM golang:1.17.8
+FROM golang:1.17.8-alpine as builder
 
+RUN apk --no-cache add git
 MAINTAINER cunoe
 
-# 环境变量
 ENV GO111MODULE=on \
-    CGO_ENABLED=1 \
+    CGO_ENABLED=0 \
     GOOS=linux \
-    GOARCH=amd64 \
-    GOPROXY=https://goproxy.cn,direct
+    GOARCH=amd64
 
-# 操作目录
 WORKDIR /go/src/2SOMEone
 
-# 复制源文件至操作目录
 COPY . .
 
-# 编译
-RUN go build -o 2SOMEone
+RUN go build -o ./user/linux_$GOARCH/user ./user/main.go ./user/user.go ./user/load_config.go
 
-# 暴露端口
-EXPOSE 3002
+FROM alpine:latest as prod
 
-CMD ["./2SOMEone"]
+RUN apk --no-cache add ca-certificates
+
+WORKDIR /root/
+
+COPY --from=builder /go/src/2SOMEone/user/linux_$GOARCH/user .
+
+CMD ["./user"]
