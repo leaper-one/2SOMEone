@@ -4,7 +4,7 @@ RUN apk --no-cache add git
 MAINTAINER cunoe
 
 ENV GO111MODULE=on \
-    CGO_ENABLED=0 \
+    CGO_ENABLED=1 \
     GOOS=linux \
     GOARCH=amd64
 
