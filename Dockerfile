@@ -16,6 +16,8 @@ RUN go build -o ./user/linux_$GOARCH/user ./user/main.go ./user/user.go ./user/l
 
 FROM alpine:latest as prod
 
+ARG GOARCH=amd64
+
 RUN apk --no-cache add ca-certificates
 
 WORKDIR /root/
