@@ -13,25 +13,33 @@ import (
 	dysmsapi "github.com/aliyun/alibaba-cloud-sdk-go/services/dysmsapi"
 )
 
-func NewMsgService(db *util.DB) *MsgService {
-	return &MsgService{
-		db: db,
+func NewMsgService(db *util.DB, msg_config ...string) *MsgService {
+	// 初始化阿里云短信服务客户端
+	if len(msg_config) > 0 {
+		client, err := dysmsapi.NewClientWithAccessKey(msg_config[0], msg_config[1], msg_config[2])
+		if err != nil {
+			panic(err)
+		}
+		return &MsgService{
+			client: client,
+			db:     db,
+		}
+	} else {
+		return &MsgService{
+			db: db,
+		}
 	}
 }
 
 type MsgService struct {
-	db *util.DB
+	db     *util.DB
+	client *dysmsapi.Client
 }
 
 // Send random code to phone via aliyun msg api
 func (a *MsgService) SendPhoneCode(ctx context.Context, phone string) (string, uint64, error) {
 	// 初始化 msg store
 	msgStore := msg.New(a.db)
-	// 初始化阿里云短信服务客户端
-	client, err := dysmsapi.NewClientWithAccessKey("cn-hangzhou", "LTAI5tREMX8wtEQoaSgGki4Z", "YGtpz8dZWTrWQqDm4fk4NlsaFHJNCW")
-	if err != nil {
-		return "", 0, err
-	}
 
 	request := dysmsapi.CreateSendSmsRequest()
 	request.Scheme = "https"
@@ -45,7 +53,7 @@ func (a *MsgService) SendPhoneCode(ctx context.Context, phone string) (string, u
 	request.TemplateCode = "SMS_205575254"
 	request.TemplateParam = "{\"code\":" + "\"" + vcode + "\"}"
 
-	respon, err := client.SendSms(request)
+	respon, err := a.client.SendSms(request)
 	if err != nil {
 		return "", 0, err
 	}
