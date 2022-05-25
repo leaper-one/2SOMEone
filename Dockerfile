@@ -1,6 +1,5 @@
-FROM golang:1.17.8-alpine as builder
+FROM golang:1.17.8 as builder
 
-RUN apk --no-cache add git
 MAINTAINER cunoe
 
 ENV GO111MODULE=on \
@@ -12,16 +11,12 @@ WORKDIR /go/src/2SOMEone
 
 COPY . .
 
-RUN go build -o ./user/linux_$GOARCH/user ./user/main.go ./user/user.go ./user/load_config.go
+RUN  go build -o ./user/user ./user/main.go ./user/user.go ./user/load_config.go
 
-FROM alpine:latest as prod
-
-ARG GOARCH=amd64
-
-RUN apk --no-cache add ca-certificates
+FROM ubuntu:20.04 as prod
 
 WORKDIR /root/
 
-COPY --from=builder /go/src/2SOMEone/user/linux_$GOARCH/user .
+COPY --from=builder /go/src/2SOMEone/user/user .
 
 CMD ["./user"]
