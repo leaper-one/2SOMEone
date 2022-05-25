@@ -7,3 +7,5 @@ __debug_bin.exe
 /Kreya/*
 *.exe
 config.yaml
+linux_amd64/
+windows_amd64/
