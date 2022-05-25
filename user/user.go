@@ -15,9 +15,10 @@ const (
 )
 
 var (
+	config      = loadConfig("./config.yaml")
 	dbc         = util.OpenDB("./user.db")
 	userService = service.NewUserService(dbc)
-	msgService  = service.NewMsgService(dbc)
+	msgService  = service.NewMsgService(dbc, config.AliMsg.RegionId, config.AliMsg.AccessKeyId, config.AliMsg.AccessKeySecret)
 )
 
 type UserService struct {

@@ -6,3 +6,6 @@ __debug_bin.exe
 /.vscode/*
 /Kreya/*
 *.exe
+config.yaml
+linux_amd64/
+windows_amd64/
