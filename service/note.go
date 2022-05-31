@@ -1,12 +1,13 @@
 package service
 
 import (
-	"2SOMEone/core"
-	"2SOMEone/store/note"
-	"2SOMEone/store/user"
-	"2SOMEone/util"
 	"context"
 	"errors"
+
+	"github.com/leaper-one/2SOMEone/core"
+	"github.com/leaper-one/2SOMEone/store/note"
+	"github.com/leaper-one/2SOMEone/store/user"
+	"github.com/leaper-one/2SOMEone/util"
 
 	"github.com/gofrs/uuid"
 )

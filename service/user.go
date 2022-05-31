@@ -1,10 +1,6 @@
 package service
 
 import (
-	"2SOMEone/core"
-	"2SOMEone/store/bili_user"
-	"2SOMEone/store/user"
-	"2SOMEone/util"
 	"context"
 	"encoding/json"
 	"errors"
@@ -12,6 +8,11 @@ import (
 	"net/http"
 	"net/url"
 	"time"
+
+	"github.com/leaper-one/2SOMEone/core"
+	"github.com/leaper-one/2SOMEone/store/bili_user"
+	"github.com/leaper-one/2SOMEone/store/user"
+	"github.com/leaper-one/2SOMEone/util"
 
 	"github.com/gofrs/uuid"
 )
