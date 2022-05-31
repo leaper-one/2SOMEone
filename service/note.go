@@ -51,55 +51,12 @@ func (n *NoteService) Delete(ctx context.Context, note_id string) error {
 	}
 	return nil
 }
-func (n *NoteService) SenderGet(ctx context.Context, offset, limit int, user_id string) ([]*core.Note, int64, error) {
+
+func (n *NoteService) GetNotes(ctx context.Context, offset, limit int64, is_sender bool, user_id string) ([]*core.Note, int64, error) {
 	noteStore := note.New(n.db)
-	notes, count, err := noteStore.GetSent(ctx, offset, limit, user_id)
+	notes, count, err := noteStore.GetNotes(ctx, offset, limit, is_sender, user_id)
 	if err != nil {
 		return nil, 0, err
-	} else if notes == nil && err == nil {
-		return nil, 0, errors.New("无记录")
 	}
 	return notes, count, nil
-}
-
-func (n *NoteService) RecipientGet(ctx context.Context, offset, limit int, user_id string) ([]*core.Note, int64, error) {
-	noteStore := note.New(n.db)
-	notes, count, err := noteStore.GetReceived(ctx, offset, limit, user_id)
-	if err != nil {
-		return nil, 0, err
-	} else if notes == nil && err == nil {
-		return nil, 0, errors.New("无记录")
-	}
-	return notes, count, nil
-}
-
-func (n *NoteService) GetByID(ctx context.Context, note_id string) (*core.Note, error) {
-	noteStore := note.New(n.db)
-	userStore := user.NewUserStore(n.db)
-	note, err := noteStore.FindByNoteID(ctx, note_id)
-	if err != nil {
-		return nil, err
-	} else if note == nil && err == nil {
-		return nil, errors.New("无此 Note")
-	}
-
-	// 隐藏 user_id
-	sender, err := userStore.FindByUserID(ctx, note.Sender)
-	if err != nil {
-		return nil, err
-	} else if sender == nil && err == nil {
-		return nil, errors.New("无发送者")
-	}
-
-	recipient, err := userStore.FindByUserID(ctx, note.Recipient)
-	if err != nil {
-		return nil, err
-	} else if sender == nil && err == nil {
-		return nil, errors.New("无接收者")
-	}
-
-	note.Sender = sender.Name
-	note.Recipient = recipient.Name
-
-	return note, nil
 }
