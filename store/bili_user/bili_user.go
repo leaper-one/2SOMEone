@@ -1,10 +1,11 @@
 package bili_user
 
 import (
-	"2SOMEone/core"
-	"2SOMEone/util"
 	"context"
 	"errors"
+
+	"github.com/leaper-one/2SOMEone/core"
+	"github.com/leaper-one/2SOMEone/util"
 
 	"gorm.io/gorm"
 )

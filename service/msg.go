@@ -1,14 +1,15 @@
 package service
 
 import (
-	"2SOMEone/core"
-	"2SOMEone/store/msg"
-	"2SOMEone/util"
 	"context"
 	"errors"
 	"fmt"
 	"math/rand"
 	"time"
+
+	"github.com/leaper-one/2SOMEone/core"
+	"github.com/leaper-one/2SOMEone/store/msg"
+	"github.com/leaper-one/2SOMEone/util"
 
 	dysmsapi "github.com/aliyun/alibaba-cloud-sdk-go/services/dysmsapi"
 )

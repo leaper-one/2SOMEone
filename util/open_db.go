@@ -1,8 +1,9 @@
 package util
 
 import (
-	"2SOMEone/core"
 	"log"
+
+	"github.com/leaper-one/2SOMEone/core"
 
 	"github.com/sirupsen/logrus"
 	"gorm.io/driver/sqlite"

@@ -1,12 +1,13 @@
 package main
 
 import (
-	"2SOMEone/service"
-	"2SOMEone/util"
 	"context"
 	"fmt"
 
-	pb "2SOMEone/grpc/note"
+	"github.com/leaper-one/2SOMEone/service"
+	"github.com/leaper-one/2SOMEone/util"
+
+	pb "github.com/leaper-one/2SOMEone/grpc/note"
 )
 
 const (
