@@ -6,7 +6,7 @@ WORKDIR /go/src/2SOMEone
 
 COPY . .
 
-RUN  make all
+RUN  make linux-user
 
 FROM ubuntu:20.04 as prod
 
