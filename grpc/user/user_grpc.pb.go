@@ -33,6 +33,8 @@ type UserServiceClient interface {
 	GetMe(ctx context.Context, in *GetMeRequest, opts ...grpc.CallOption) (*GetMeResponse, error)
 	// jwt needed in metadata
 	SetInfo(ctx context.Context, in *SetInfoRequest, opts ...grpc.CallOption) (*SetInfoResponse, error)
+	// 根据 buid 获取 user_id
+	GetUserIDByBuid(ctx context.Context, in *GetUserIDByBuidRequest, opts ...grpc.CallOption) (*GetUserIDByBuidResponse, error)
 }
 
 type userServiceClient struct {
@@ -88,6 +90,15 @@ func (c *userServiceClient) SetInfo(ctx context.Context, in *SetInfoRequest, opt
 	return out, nil
 }
 
+func (c *userServiceClient) GetUserIDByBuid(ctx context.Context, in *GetUserIDByBuidRequest, opts ...grpc.CallOption) (*GetUserIDByBuidResponse, error) {
+	out := new(GetUserIDByBuidResponse)
+	err := c.cc.Invoke(ctx, "/user.UserService/GetUserIDByBuid", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // UserServiceServer is the server API for UserService service.
 // All implementations must embed UnimplementedUserServiceServer
 // for forward compatibility
@@ -103,6 +114,8 @@ type UserServiceServer interface {
 	GetMe(context.Context, *GetMeRequest) (*GetMeResponse, error)
 	// jwt needed in metadata
 	SetInfo(context.Context, *SetInfoRequest) (*SetInfoResponse, error)
+	// 根据 buid 获取 user_id
+	GetUserIDByBuid(context.Context, *GetUserIDByBuidRequest) (*GetUserIDByBuidResponse, error)
 	mustEmbedUnimplementedUserServiceServer()
 }
 
@@ -124,6 +137,9 @@ func (UnimplementedUserServiceServer) GetMe(context.Context, *GetMeRequest) (*Ge
 }
 func (UnimplementedUserServiceServer) SetInfo(context.Context, *SetInfoRequest) (*SetInfoResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SetInfo not implemented")
+}
+func (UnimplementedUserServiceServer) GetUserIDByBuid(context.Context, *GetUserIDByBuidRequest) (*GetUserIDByBuidResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetUserIDByBuid not implemented")
 }
 func (UnimplementedUserServiceServer) mustEmbedUnimplementedUserServiceServer() {}
 
@@ -228,6 +244,24 @@ func _UserService_SetInfo_Handler(srv interface{}, ctx context.Context, dec func
 	return interceptor(ctx, in, info, handler)
 }
 
+func _UserService_GetUserIDByBuid_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetUserIDByBuidRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).GetUserIDByBuid(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/user.UserService/GetUserIDByBuid",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).GetUserIDByBuid(ctx, req.(*GetUserIDByBuidRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // UserService_ServiceDesc is the grpc.ServiceDesc for UserService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -254,6 +288,10 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "SetInfo",
 			Handler:    _UserService_SetInfo_Handler,
+		},
+		{
+			MethodName: "GetUserIDByBuid",
+			Handler:    _UserService_GetUserIDByBuid_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

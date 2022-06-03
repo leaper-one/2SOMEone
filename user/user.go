@@ -103,3 +103,13 @@ func (s *UserService) SetInfo(ctx context.Context, in *pb.SetInfoRequest) (*pb.S
 	}
 	return &pb.SetInfoResponse{Code: SUCCESS, Msg: "success."}, nil
 }
+
+func (s *UserService) GetUserIDByBuid(ctx context.Context, in *pb.GetUserIDByBuidRequest) (*pb.GetUserIDByBuidResponse, error) {
+	fmt.Printf("in: %v\n", in)
+	buser, err := userService.FindByBuid(ctx, in.Buid)
+	if err != nil {
+		return &pb.GetUserIDByBuidResponse{Code: FAIL, Msg: err.Error()}, err
+	}
+	return &pb.GetUserIDByBuidResponse{Code: SUCCESS, Msg: "success.", UserId: buser.UserID}, nil
+
+}

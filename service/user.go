@@ -148,3 +148,14 @@ func (a *UserService) GetMe(ctx context.Context, user_id string) (*core.BasicUse
 	}
 	return user, nil
 }
+
+func (a *UserService) FindByBuid(ctx context.Context, buid int64) (*core.BiliUser, error) {
+	biliUserStore := bili_user.NewBiliUserStore(a.db)
+	buser, err := biliUserStore.FindByBuid(ctx, buid)
+	if err != nil {
+		return nil, err
+	} else if buser == nil && err == nil {
+		return nil, errors.New("无此用户")
+	}
+	return buser, nil
+}
