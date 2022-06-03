@@ -16,7 +16,7 @@ const (
 )
 
 var (
-	config      = loadConfig("./config.yaml")
+	config      = util.LoadConfig("./config.yaml", &Config{}).(*Config)
 	dbc         = util.OpenDB("./user.db")
 	userService = service.NewUserService(dbc)
 	msgService  = service.NewMsgService(dbc, config.AliMsg.RegionId, config.AliMsg.AccessKeyId, config.AliMsg.AccessKeySecret)
@@ -24,6 +24,16 @@ var (
 
 type UserService struct {
 	pb.UnimplementedUserServiceServer
+}
+type Config struct {
+	App struct {
+		Name string `yaml:"name"`
+	}
+	AliMsg struct {
+		RegionId        string `yaml:"region_id"`
+		AccessKeyId     string `yaml:"access_key_id"`
+		AccessKeySecret string `yaml:"access_key_secret"`
+	}
 }
 
 // Sent phone message code.
