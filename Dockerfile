@@ -6,12 +6,12 @@ WORKDIR /go/src/2SOMEone
 
 COPY . .
 
-RUN  make build-docker
+RUN  make all
 
 FROM ubuntu:20.04 as prod
 
 WORKDIR /root/
 
-COPY --from=builder /go/src/2SOMEone/user/docker/user .
+COPY --from=builder /go/src/2SOMEone/user/linux_amd64/user .
 
 CMD ["./user"]
