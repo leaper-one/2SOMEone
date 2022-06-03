@@ -109,6 +109,8 @@ github.com/leaper-one/2-some-one-proto v0.0.0-20220603074851-04ef3bf2c4f5 h1:Ae1
 github.com/leaper-one/2-some-one-proto v0.0.0-20220603074851-04ef3bf2c4f5/go.mod h1:DtF2cFFo0sX8HmMiThxNDeLKOtOA9EU6yb6MAlslMjE=
 github.com/leaper-one/2someone-proto v0.0.1 h1:YDVoxfWF4/L6CYzr9SAglo6QJDny0T/ubOjgGo9+Nog=
 github.com/leaper-one/2someone-proto v0.0.1/go.mod h1:jETx6ez7mR7VKQT1SsTqFRLLEtejkXf1/0JffofgWNk=
+github.com/leaper-one/2someone-proto v0.0.2 h1:Pandegm97S6RIIENGSW1SxVYa+BEmqxEO7V9Iv+0xoI=
+github.com/leaper-one/2someone-proto v0.0.2/go.mod h1:jETx6ez7mR7VKQT1SsTqFRLLEtejkXf1/0JffofgWNk=
 github.com/mattn/go-sqlite3 v1.14.12 h1:TJ1bhYJPV44phC+IMu1u2K/i5RriLTPe+yc68XDJ1Z0=
 github.com/mattn/go-sqlite3 v1.14.12/go.mod h1:NyWgC/yNuGj7Q9rpYnZvas74GogHl5/Z4A/KQRfk6bU=
 github.com/modern-go/concurrent v0.0.0-20180228061459-e0a39a4cb421/go.mod h1:6dJC0mAP4ikYIbvyc7fijjWJddQyLn8Ig3JB5CqoB9Q=

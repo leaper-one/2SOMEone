@@ -7,7 +7,7 @@ import (
 	"github.com/leaper-one/2SOMEone/service"
 	"github.com/leaper-one/2SOMEone/util"
 
-	pb "github.com/leaper-one/2someone-proto/gen/grpc/2-some-one/user/golang"
+	pb "github.com/leaper-one/2someone-proto/gen/golang/account/user"
 )
 
 const (

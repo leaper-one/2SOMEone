@@ -7,7 +7,7 @@ import (
 	"github.com/leaper-one/2SOMEone/service"
 	"github.com/leaper-one/2SOMEone/util"
 
-	pb "github.com/leaper-one/2someone-proto/gen/grpc/bubble-box/note/golang"
+	pb "github.com/leaper-one/2someone-proto/gen/golang/bubble-box/note"
 )
 
 const (
