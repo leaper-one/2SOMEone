@@ -7,9 +7,6 @@ on:
 
 jobs:
 
-  build:
-    runs-on: ubuntu-latest
-
   deploy:
     runs-on: ubuntu-latest
     needs: [build]
