@@ -34,6 +34,9 @@ type Config struct {
 		AccessKeyId     string `yaml:"access_key_id"`
 		AccessKeySecret string `yaml:"access_key_secret"`
 	}
+	GrpcSet struct {
+		EndPoint string `yaml:"end_point"`
+	}
 }
 
 // Sent phone message code.

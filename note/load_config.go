@@ -11,6 +11,9 @@ type Config struct {
 	App struct {
 		Name string `yaml:"name"`
 	}
+	GrpcSet struct {
+		EndPoint string `yaml:"end_point"`
+	}
 }
 
 func loadConfig(path string) *Config {
