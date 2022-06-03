@@ -11,11 +11,6 @@ type Config struct {
 	App struct {
 		Name string `yaml:"name"`
 	}
-	AliMsg struct {
-		RegionId        string `yaml:"region_id"`
-		AccessKeyId     string `yaml:"access_key_id"`
-		AccessKeySecret string `yaml:"access_key_secret"`
-	}
 	GrpcSet struct {
 		EndPoint string `yaml:"end_point"`
 	}

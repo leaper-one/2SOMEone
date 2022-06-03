@@ -4,13 +4,14 @@ import (
 	"log"
 	"net"
 
-	pb "2SOMEone/grpc/user"
+	pb "github.com/leaper-one/2SOMEone/grpc/user"
+	"github.com/leaper-one/2SOMEone/util"
 	"google.golang.org/grpc"
 )
 
 func main() {
 	// start server
-	config := loadConfig("./config.yaml")
+	config := util.LoadConfig("./config.yaml", &Config{}).(*Config)
 	log.Printf("App: %v", config.App.Name)
 	lis, err := net.Listen("tcp", config.GrpcSet.EndPoint)
 	if err != nil {

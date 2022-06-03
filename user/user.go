@@ -1,12 +1,13 @@
 package main
 
 import (
-	"2SOMEone/service"
-	"2SOMEone/util"
 	"context"
 	"fmt"
 
-	pb "2SOMEone/grpc/user"
+	"github.com/leaper-one/2SOMEone/service"
+	"github.com/leaper-one/2SOMEone/util"
+
+	pb "github.com/leaper-one/2SOMEone/grpc/user"
 )
 
 const (
@@ -15,7 +16,7 @@ const (
 )
 
 var (
-	config      = loadConfig("./config.yaml")
+	config      = util.LoadConfig("./config.yaml", &Config{}).(*Config)
 	dbc         = util.OpenDB("./user.db")
 	userService = service.NewUserService(dbc)
 	msgService  = service.NewMsgService(dbc, config.AliMsg.RegionId, config.AliMsg.AccessKeyId, config.AliMsg.AccessKeySecret)
@@ -23,6 +24,19 @@ var (
 
 type UserService struct {
 	pb.UnimplementedUserServiceServer
+}
+type Config struct {
+	App struct {
+		Name string `yaml:"name"`
+	}
+	AliMsg struct {
+		RegionId        string `yaml:"region_id"`
+		AccessKeyId     string `yaml:"access_key_id"`
+		AccessKeySecret string `yaml:"access_key_secret"`
+	}
+	GrpcSet struct {
+		EndPoint string `yaml:"end_point"`
+	}
 }
 
 // Sent phone message code.
