@@ -1,8 +1,13 @@
-name: deploy 2someone
+name: build 2someone latest
 
 on:
   push:
     branches: [ master ]
+    paths-ignore:
+      - .github/workflows/dev_docker_build.yml
+      - .github/workflows/master_docker_build.yml
+      - .github/workflows/deploy_2someone_release.yml
+      - README.md
   pull_request:
     branches: [ master ]
 
@@ -20,16 +25,3 @@ jobs:
           registry: registry.cn-shanghai.aliyuncs.com
           repository: leaperone/2someone
           tags: latest
-
-  deploy:
-    runs-on: ubuntu-latest
-    needs: [build]
-    steps:
-      - name: SSH Remote Commands
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.HOST }}
-          username: ${{ secrets.USERNAME }}
-          port: ${{ secrets.PORT }}
-          password: ${{ secrets.PASSWORD }}
-          script: ${{ secrets.COMMAND }}
