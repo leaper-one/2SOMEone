@@ -7,7 +7,6 @@ require (
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/fox-one/mixin-sdk-go v1.6.10
 	github.com/gofrs/uuid v4.2.0+incompatible
-	github.com/leaper-one/2someone-proto/gen/golang v0.0.0-20220604064557-b7643f57603c
 	github.com/shopspring/decimal v1.3.1
 	github.com/sirupsen/logrus v1.8.1
 	golang.org/x/crypto v0.0.0-20220214200702-86341886e292
@@ -30,6 +29,8 @@ require (
 	github.com/jinzhu/now v1.1.5 // indirect
 	github.com/jmespath/go-jmespath v0.0.0-20180206201540-c2b33e8439af // indirect
 	github.com/json-iterator/go v1.1.5 // indirect
+	github.com/leaper-one/2someone-proto v0.0.11
+	github.com/leaper-one/2someone-proto/gen/proto/go v0.0.0-20220630033808-8386986274c9
 	github.com/mattn/go-sqlite3 v1.14.12 // indirect
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.1 // indirect

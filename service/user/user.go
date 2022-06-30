@@ -1,4 +1,4 @@
-package service
+package account
 
 import (
 	"context"
@@ -13,6 +13,7 @@ import (
 	"github.com/leaper-one/2SOMEone/store/bili_user"
 	"github.com/leaper-one/2SOMEone/store/user"
 	"github.com/leaper-one/2SOMEone/util"
+	"github.com/leaper-one/2SOMEone/service/message"
 
 	"github.com/gofrs/uuid"
 )

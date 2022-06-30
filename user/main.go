@@ -4,7 +4,7 @@ import (
 	"log"
 	"net"
 
-	pb "github.com/leaper-one/2someone-proto/gen/golang/account/user"
+	pb "github.com/leaper-one/2someone-proto/gen/proto/go/2SOMEone/user/v1"
 	"github.com/leaper-one/2SOMEone/util"
 	"google.golang.org/grpc"
 )
