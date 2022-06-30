@@ -13,7 +13,7 @@ import (
 	"github.com/leaper-one/2SOMEone/store/bili_user"
 	"github.com/leaper-one/2SOMEone/store/user"
 	"github.com/leaper-one/2SOMEone/util"
-	"github.com/leaper-one/2SOMEone/service/message"
+	// "github.com/leaper-one/2SOMEone/service/message"
 
 	"github.com/gofrs/uuid"
 )
@@ -31,14 +31,7 @@ type UserService struct {
 }
 
 func (a *UserService) SignUpByPhone(ctx context.Context, phone, code, password string, msg_id uint) error {
-	// 校验手机验证码
-	ok, err := NewMsgService(a.db).CheckPhoneCode(ctx, phone, code, msg_id)
-	if err != nil {
-		return err
-	}
-	if !ok {
-		return errors.New("验证码错误")
-	}
+	// TODO: 校验手机验证码
 
 	// 创建用户
 	userStore := user.NewUserStore(a.db)
@@ -49,7 +42,7 @@ func (a *UserService) SignUpByPhone(ctx context.Context, phone, code, password s
 	// 密码加密
 	user.Password, _ = util.HashPassword(password)
 
-	err = userStore.Save(ctx, user)
+	err := userStore.Save(ctx, user)
 	if err != nil {
 		return err
 	}
