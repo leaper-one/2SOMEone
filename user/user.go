@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	message "github.com/leaper-one/2SOMEone/service/message"
+	// message "github.com/leaper-one/2SOMEone/service/message"
 	user "github.com/leaper-one/2SOMEone/service/user"
 	"github.com/leaper-one/2SOMEone/util"
 
@@ -17,10 +17,10 @@ import (
 // )
 
 var (
-	config      = util.LoadConfig("./config.yaml", &Config{}).(*Config)
+	// config      = util.LoadConfig("./config.yaml", &Config{}).(*Config)
 	dbc         = util.OpenDB("./user.db")
 	userService = user.NewUserService(dbc)
-	msgService  = message.NewMsgService(dbc, config.AliMsg.RegionId, config.AliMsg.AccessKeyId, config.AliMsg.AccessKeySecret)
+	// msgService  = message.NewMsgService(dbc, config.AliMsg.RegionId, config.AliMsg.AccessKeyId, config.AliMsg.AccessKeySecret)
 )
 
 type UserService struct {
