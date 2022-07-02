@@ -30,7 +30,7 @@ type UserService struct {
 	db *util.DB
 }
 
-func (a *UserService) SignUpByPhone(ctx context.Context, phone, code, password string, msg_id uint) error {
+func (a *UserService) SignUpByPhone(ctx context.Context, phone, password string) error {
 	// TODO: 校验手机验证码
 
 	// 创建用户

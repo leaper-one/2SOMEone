@@ -1,0 +1,10 @@
+app:
+  name: 2SOMEone-user
+
+alimsg:
+  region_id: cn-hangzhou
+  access_key_id: <your access key id>
+  access_key_secret: <your access key secret>
+
+grpcset:
+  end_point: <your endpoint>

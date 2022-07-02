@@ -22,7 +22,7 @@ func main() {
 	reg := etcd.NewRegistry(registry.Addrs(config.Registry.Address))
 
 	service := micro.NewService(
-		micro.Name("go.micro.service.user"),
+		micro.Name("go.micro.srv.user"),
 		micro.Version("v1"),
 		micro.Registry(reg),
 	)

@@ -3,7 +3,7 @@ module github.com/leaper-one/2SOMEone
 go 1.17
 
 require (
-	github.com/aliyun/alibaba-cloud-sdk-go v1.61.1661
+	github.com/aliyun/alibaba-cloud-sdk-go v1.61.1662
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/fox-one/mixin-sdk-go v1.6.15
 	github.com/gofrs/uuid v4.2.0+incompatible
