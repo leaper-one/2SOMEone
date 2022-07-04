@@ -16,7 +16,7 @@ const (
 )
 
 var (
-	config      = util.LoadConfig("./config.yaml", &Config{}).(*Config)
+	config      = util.LoadConfig("./config_example.yaml", &Config{}).(*Config)
 	dbc         = util.OpenDB("./user.db")
 	userService = service.NewUserService(dbc)
 	msgService  = service.NewMsgService(dbc, config.AliMsg.RegionId, config.AliMsg.AccessKeyId, config.AliMsg.AccessKeySecret)
