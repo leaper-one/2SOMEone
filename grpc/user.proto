@@ -4,16 +4,10 @@ package user;
 // import public "google/protobuf/timestamp.proto";
 
 option go_package = "./grpc/user";
-import "google/api/annotations.proto"; //使用grpc-gateway引入,其实它已经找到包了，但是还是报找不到包异常？？？
 
 service UserService {
     // 向手机号发送验证码
-    rpc SentMessageCode(SentMessageCodeRequest) returns (SentMessageCodeResponse) {
-        option (google.api.http) = {
-            post : "/v1/post"
-            body:"*"
-          };
-    }
+    rpc SentMessageCode(SentMessageCodeRequest) returns (SentMessageCodeResponse) {}
     // 通过手机号注册，需要验证码
     rpc SignUpByPhone(SignUpByPhoneRequest) returns (SignUpByPhoneResponse) {}
     // 通过手机号登录
