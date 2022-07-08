@@ -59,7 +59,7 @@ func (u *UserService) SignUpByPhone(ctx context.Context, req *pb.SignUpByPhoneRe
 
 	// 创建 Message 客户端
 	// greeter := pb.NewGreeterService("Greeter", service.Client())
-	msgr := msg_pb.NewMessageService("Message.Client", service.Client())
+	msgr := msg_pb.NewMessageService("go.micro.srv.message", service.Client())
 
 	// 远程调用 Greeter 服务的 Hello 方法
 	// rsp, err := greeter.Hello(context.TODO(), &proto.HelloRequest{Name: "学院君"})
