@@ -38,8 +38,8 @@ type Config struct {
 		AccessKeyId     string `yaml:"access_key_id"`
 		AccessKeySecret string `yaml:"access_key_secret"`
 	}
-	GrpcSet struct {
-		EndPoint string `yaml:"end_point"`
+	EndPoint struct {
+		GrpcEndpoint string `yaml:"grpc_endpoint"`
 	}
 	Registry struct {
 		Address string `yaml:"address"`
@@ -50,9 +50,7 @@ type Config struct {
 func (u *UserService) SignUpByPhone(ctx context.Context, req *pb.SignUpByPhoneRequest, response *pb.SignUpByPhoneResponse) error {
 	fmt.Printf("SignUpByPhone: %v\n", req)
 
-	// check phone code
 	// 创建一个新的服务
-	// service := micro.NewService(micro.Name("Greeter.Client"))
 	service := micro.NewService(micro.Name("go.micro.service.message.client"))
 	// 初始化
 	service.Init()

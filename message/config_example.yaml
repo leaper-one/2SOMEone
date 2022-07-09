@@ -6,8 +6,11 @@ alimsg:
   access_key_id: <your access key id>
   access_key_secret: <your access key secret>
 
-grpcset:
-  end_point: <your endpoint>
+endpoint:
+  # grpc 监听端口
+  grpc_endpoint: <your endpoint>
+  # http 默认监听端口
+  api_endpoint: <your endpoint>
 
 registry:
   address: <your endpoint>

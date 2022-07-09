@@ -24,7 +24,7 @@ func main() {
 	service := micro.NewService(
 		micro.Name("go.micro.srv.user"),
 		micro.Version("v1"),
-		micro.Address(config.GrpcSet.EndPoint),
+		micro.Address(config.EndPoint.GrpcEndpoint),
 		micro.Registry(reg),
 	)
 
