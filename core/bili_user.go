@@ -18,5 +18,6 @@ type (
 	BiliUserStore interface {
 		Save(ctx context.Context, bili_user *BiliUser) error
 		FindByUserID(ctx context.Context, user_id string) (*BiliUser, error)
+		FindByBuid(ctx context.Context, buid int64) (*BiliUser, error)
 	}
 )

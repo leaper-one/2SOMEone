@@ -2,29 +2,33 @@ package main
 
 import (
 	"context"
+	"errors"
 	"fmt"
 
-	"github.com/leaper-one/2SOMEone/service"
+	// message "github.com/leaper-one/2SOMEone/service/message"
+	user "github.com/leaper-one/2SOMEone/service/user"
 	"github.com/leaper-one/2SOMEone/util"
 
-	pb "github.com/leaper-one/2SOMEone/grpc/user"
+	msg_pb "github.com/leaper-one/2someone-proto/gen/proto/go/2SOMEone/message/v1"
+	pb "github.com/leaper-one/2someone-proto/gen/proto/go/2SOMEone/user/v1"
+
+	"go-micro.dev/v4"
 )
 
-const (
-	SUCCESS = 200
-	FAIL    = 500
-)
+// const (
+// SUCCESS = 200
+// FAIL    = 500
+// )
 
 var (
-	config      = util.LoadConfig("./config.yaml", &Config{}).(*Config)
+	// config      = util.LoadConfig("./config.yaml", &Config{}).(*Config)
 	dbc         = util.OpenDB("./user.db")
-	userService = service.NewUserService(dbc)
-	msgService  = service.NewMsgService(dbc, config.AliMsg.RegionId, config.AliMsg.AccessKeyId, config.AliMsg.AccessKeySecret)
+	userService = user.NewUserService(dbc)
+	// msgService  = message.NewMsgService(dbc, config.AliMsg.RegionId, config.AliMsg.AccessKeyId, config.AliMsg.AccessKeySecret)
 )
 
-type UserService struct {
-	pb.UnimplementedUserServiceServer
-}
+type UserService struct{}
+
 type Config struct {
 	App struct {
 		Name string `yaml:"name"`
@@ -37,69 +41,130 @@ type Config struct {
 	GrpcSet struct {
 		EndPoint string `yaml:"end_point"`
 	}
-}
-
-// Sent phone message code.
-func (s *UserService) SentMessageCode(ctx context.Context, in *pb.SentMessageCodeRequest) (*pb.SentMessageCodeResponse, error) {
-	fmt.Printf("SentMessageCode: %v\n", in)
-	_, msg_id, err := msgService.SendPhoneCode(ctx, in.Phone)
-	if err != nil {
-		return &pb.SentMessageCodeResponse{Code: FAIL, Msg: err.Error()}, err
+	Registry struct {
+		Address string `yaml:"address"`
 	}
-	return &pb.SentMessageCodeResponse{Code: SUCCESS, Msg: "success.", MsgId: msg_id}, nil
 }
 
-func (s *UserService) SignUpByPhone(ctx context.Context, in *pb.SignUpByPhoneRequest) (*pb.SignUpByPhoneResponse, error) {
-	fmt.Printf("SignUpByPhone: %v\n", in)
-	err := userService.SignUpByPhone(ctx, in.Phone, in.Code, in.Password, uint(in.MsgId))
+// Sign up by phone
+func (u *UserService) SignUpByPhone(ctx context.Context, req *pb.SignUpByPhoneRequest, response *pb.SignUpByPhoneResponse) error {
+	fmt.Printf("SignUpByPhone: %v\n", req)
+
+	// check phone code
+	// 创建一个新的服务
+	// service := micro.NewService(micro.Name("Greeter.Client"))
+	service := micro.NewService(micro.Name("go.micro.service.message.client"))
+	// 初始化
+	service.Init()
+
+	// 创建 Message 客户端
+	// greeter := pb.NewGreeterService("Greeter", service.Client())
+	msgr := msg_pb.NewMessageService("go.micro.srv.message", service.Client())
+
+	// 远程调用 Greeter 服务的 Hello 方法
+	rsp, err := msgr.CheckMessageCode(context.Background(), &msg_pb.CheckMessageCodeRequest{
+		Phone: req.Phone,
+		Code:  req.Code,
+		MsgId: req.MsgId,
+	})
 	if err != nil {
-		return &pb.SignUpByPhoneResponse{Code: FAIL, Msg: err.Error()}, err
+		return err
 	}
-	return &pb.SignUpByPhoneResponse{Code: SUCCESS, Msg: "success."}, nil
-}
 
-func (s *UserService) SignInByPhone(ctx context.Context, in *pb.SignInByPhoneRequest) (*pb.SignInByPhoneResponse, error) {
-	fmt.Printf("SignInByPhone: %v\n", in)
-	token, err := userService.Auth(ctx, in.Phone, in.Password)
+	if !rsp.IsMatch {
+		return errors.New("code not match")
+	}
+
+	err = userService.SignUpByPhone(ctx, req.Phone, req.Password)
 	if err != nil {
-		return &pb.SignInByPhoneResponse{Code: FAIL, Msg: err.Error(), Token: ""}, err
+		response.Code = util.FAIL
+		response.Msg = err.Error()
+		return err
 	}
-	return &pb.SignInByPhoneResponse{Code: SUCCESS, Msg: "success.", Token: token}, nil
+	response.Code = util.SUCCESS
+	response.Msg = "success."
+	return nil
 }
 
-// Get current user infomation
-func (s *UserService) GetMe(ctx context.Context, in *pb.GetMeRequest) (*pb.GetMeResponse, error) {
-	fmt.Printf("GetMe: %v\n", in)
+// Sign in by phone
+func (u *UserService) SignInByPhone(ctx context.Context, req *pb.SignInByPhoneRequest, response *pb.SignInByPhoneResponse) error {
+	fmt.Printf("SignInByPhone: %v\n", req)
+	token, err := userService.Auth(ctx, req.Phone, req.Password)
+	if err != nil {
+		response.Code = util.FAIL
+		response.Msg = err.Error()
+		response.Token = ""
+		return err
+	}
+
+	response.Code = util.SUCCESS
+	response.Msg = "success."
+	response.Token = token
+	return nil
+}
+
+// Get me
+func (u *UserService) GetMe(ctx context.Context, req *pb.GetMeRequest, response *pb.GetMeResponse) error {
+	fmt.Printf("GetMe: %v\n", req)
 	// ctx contains auth_token, param it to get user_id
 	user_id, err := util.CheckAuth(ctx)
 	if err != nil {
-		return &pb.GetMeResponse{Code: FAIL, Msg: err.Error()}, err
+		response.Code = util.FAIL
+		response.Msg = err.Error()
+		return err
 	}
 	user, err := userService.GetMe(ctx, user_id)
 	if err != nil {
-		return &pb.GetMeResponse{Code: FAIL, Msg: err.Error()}, err
+		response.Code = util.FAIL
+		response.Msg = err.Error()
+		return err
 	}
-
-	return &pb.GetMeResponse{Code: SUCCESS, Msg: "success.", User: &pb.BasicUser{
+	response.Code = util.SUCCESS
+	response.Msg = "success."
+	response.User = &pb.BasicUser{
 		UserId: user.UserID,
 		UserInfo: &pb.UserInfo{
 			Name:   user.Name,
-			Phone:  user.Phone,
 			Avatar: user.Avatar,
+			Phone:  user.Phone,
 			Email:  user.Email,
 		},
-	}}, nil
+	}
+	return nil
 }
 
-func (s *UserService) SetInfo(ctx context.Context, in *pb.SetInfoRequest) (*pb.SetInfoResponse, error) {
-	fmt.Printf("SetInfo: %v\n", in)
+// Set info
+func (u UserService) SetInfo(ctx context.Context, req *pb.SetInfoRequest, response *pb.SetInfoResponse) error {
+	fmt.Printf("SetInfo: %v\n", req)
+	// ctx contains auth_token, param it to get user_id
 	user_id, err := util.CheckAuth(ctx)
 	if err != nil {
-		return &pb.SetInfoResponse{Code: FAIL, Msg: err.Error()}, err
+		response.Code = util.FAIL
+		response.Msg = err.Error()
+		return err
 	}
-	err = userService.SetInfo(ctx, user_id, in.Name, in.Avatar, in.Buid)
+	err = userService.SetInfo(ctx, user_id, req.Name, req.Avatar, req.Buid)
 	if err != nil {
-		return &pb.SetInfoResponse{Code: FAIL, Msg: err.Error()}, err
+		response.Code = util.FAIL
+		response.Msg = err.Error()
+		return err
 	}
-	return &pb.SetInfoResponse{Code: SUCCESS, Msg: "success."}, nil
+	response.Code = util.SUCCESS
+	response.Msg = "success."
+	return nil
+}
+
+// Get user_id by buid
+func (u UserService) GetUserIDByBuid(ctx context.Context, req *pb.GetUserIDByBuidRequest, response *pb.GetUserIDByBuidResponse) error {
+	fmt.Printf("GetUserIDByBuid: %v\n", req)
+	buser, err := userService.FindByBuid(ctx, req.Buid)
+	if err != nil {
+		response.Code = util.FAIL
+		response.Msg = err.Error()
+		return err
+	}
+	response.Code = util.SUCCESS
+	response.Msg = "success."
+	response.UserId = buser.UserID
+	return nil
 }

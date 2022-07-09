@@ -11,6 +11,14 @@ windows-user:
 
 build-user: linux-user windows-user
 
-build-all: build-user
+linux-message:
+	CGO_ENABLED=1 GO111MODULE=on GOOS=linux GOARCH=${GOARCH} go build -o ./message/linux_${GOARCH}/message ./message/main.go ./message/message.go
+
+windows-message:
+	CGO_ENABLED=1 GO111MODULE=on GOOS=windows GOARCH=${GOARCH} go build -o ./message/windows_${GOARCH}/message.exe ./message/main.go ./message/message.go
+
+build-message: linux-message windows-message
+
+build-all: build-user build-message
 
 all: build-all

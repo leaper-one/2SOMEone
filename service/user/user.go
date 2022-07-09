@@ -1,4 +1,4 @@
-package service
+package account
 
 import (
 	"context"
@@ -13,6 +13,7 @@ import (
 	"github.com/leaper-one/2SOMEone/store/bili_user"
 	"github.com/leaper-one/2SOMEone/store/user"
 	"github.com/leaper-one/2SOMEone/util"
+	// "github.com/leaper-one/2SOMEone/service/message"
 
 	"github.com/gofrs/uuid"
 )
@@ -29,15 +30,8 @@ type UserService struct {
 	db *util.DB
 }
 
-func (a *UserService) SignUpByPhone(ctx context.Context, phone, code, password string, msg_id uint) error {
-	// 校验手机验证码
-	ok, err := NewMsgService(a.db).CheckPhoneCode(ctx, phone, code, msg_id)
-	if err != nil {
-		return err
-	}
-	if !ok {
-		return errors.New("验证码错误")
-	}
+func (a *UserService) SignUpByPhone(ctx context.Context, phone, password string) error {
+	// TODO: 校验手机验证码
 
 	// 创建用户
 	userStore := user.NewUserStore(a.db)
@@ -48,7 +42,7 @@ func (a *UserService) SignUpByPhone(ctx context.Context, phone, code, password s
 	// 密码加密
 	user.Password, _ = util.HashPassword(password)
 
-	err = userStore.Save(ctx, user)
+	err := userStore.Save(ctx, user)
 	if err != nil {
 		return err
 	}
@@ -147,4 +141,15 @@ func (a *UserService) GetMe(ctx context.Context, user_id string) (*core.BasicUse
 		return nil, errors.New("无此用户")
 	}
 	return user, nil
+}
+
+func (a *UserService) FindByBuid(ctx context.Context, buid int64) (*core.BiliUser, error) {
+	biliUserStore := bili_user.NewBiliUserStore(a.db)
+	buser, err := biliUserStore.FindByBuid(ctx, buid)
+	if err != nil {
+		return nil, err
+	} else if buser == nil && err == nil {
+		return nil, errors.New("无此用户")
+	}
+	return buser, nil
 }
