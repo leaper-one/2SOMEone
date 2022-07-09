@@ -62,7 +62,6 @@ func (u *UserService) SignUpByPhone(ctx context.Context, req *pb.SignUpByPhoneRe
 	msgr := msg_pb.NewMessageService("go.micro.srv.message", service.Client())
 
 	// 远程调用 Greeter 服务的 Hello 方法
-	// rsp, err := greeter.Hello(context.TODO(), &proto.HelloRequest{Name: "学院君"})
 	rsp, err := msgr.CheckMessageCode(context.Background(), &msg_pb.CheckMessageCodeRequest{
 		Phone: req.Phone,
 		Code:  req.Code,
