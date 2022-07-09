@@ -13,7 +13,7 @@ on:
 
 jobs:
 
-  build:
+  build-user:
     runs-on: ubuntu-latest
 
     steps:
@@ -24,4 +24,19 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
           registry: registry.cn-shanghai.aliyuncs.com
           repository: leaperone/2someone
-          tags: dev-latest
+          target: user
+          tags: dev-user-latest
+          
+  build-message:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v1
+      - uses: jerray/publish-docker-action@master
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+          registry: registry.cn-shanghai.aliyuncs.com
+          repository: leaperone/2someone
+          target: message
+          tags: dev-message-latest
