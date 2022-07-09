@@ -31,3 +31,11 @@ $ make all
 $ cd user
 $ ls
 ```  
+
+# Start a service
+```
+cd /user
+go run main.go user.go
+go run api/api.go  // API 依赖底层 go.micro.srv.greeter 服务
+micro api --handler=api // 启动 API 网关处理 HTTP 请求，--handle 参数不能为空，否则可能报错
+```
