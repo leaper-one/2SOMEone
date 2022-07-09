@@ -6,8 +6,9 @@ alimsg:
   access_key_id: <your access key id>
   access_key_secret: <your access key secret>
 
-grpcset:
-  end_point: <your endpoint>
+endpoint:
+  grpc_endpoint: <your endpoint>
+  api_endpoint: <your endpoint>
 
 registry:
   address: <your endpoint>

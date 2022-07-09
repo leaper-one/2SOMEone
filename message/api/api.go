@@ -7,6 +7,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/leaper-one/2SOMEone/util"
 	pb "github.com/leaper-one/2someone-proto/gen/proto/go/2SOMEone/message/v1"
 
 	"go-micro.dev/v4"
@@ -84,10 +85,21 @@ func (m *Msg) CheckMessageCode(ctx context.Context, req *api.Request, rsp *api.R
 	return nil
 }
 
+type Config struct {
+	App struct {
+		Name string `yaml:"name"`
+	}
+	EndPoint struct {
+		ApiEndpoint string `yaml:"api_endpoint"`
+	}
+}
+
 func main() {
+	config := util.LoadConfig("./config.yaml", &Config{}).(*Config)
 	// 创建一个新的服务
 	service := micro.NewService(
 		micro.Name("go.micro.api.message"),
+		micro.Address(config.EndPoint.ApiEndpoint),
 	)
 
 	// 解析命令行参数

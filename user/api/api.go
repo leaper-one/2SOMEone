@@ -7,6 +7,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/leaper-one/2SOMEone/util"
 	pb "github.com/leaper-one/2someone-proto/gen/proto/go/2SOMEone/user/v1"
 
 	"go-micro.dev/v4"
@@ -48,7 +49,7 @@ func (u *User) SignUpByPhone(ctx context.Context, req *api.Request, rsp *api.Res
 		Phone:    strings.Join(phone.Values, " "),
 		Code:     strings.Join(code.Values, " "),
 		Password: strings.Join(password.Values, " "),
-		MsgId: i,
+		MsgId:    i,
 	})
 
 	if err != nil {
@@ -136,9 +137,9 @@ func (u *User) SetInfo(ctx context.Context, req *api.Request, rsp *api.Response)
 
 	// 将参数交由底层服务处理
 	response, err := u.Client.SetInfo(ctx, &pb.SetInfoRequest{
-		Name:    strings.Join(name.Values, " "),
-		Avatar:  strings.Join(avatar.Values, " "),
-		Buid: strings.Join(buid.Values, " "),
+		Name:   strings.Join(name.Values, " "),
+		Avatar: strings.Join(avatar.Values, " "),
+		Buid:   strings.Join(buid.Values, " "),
 	})
 
 	if err != nil {
@@ -154,7 +155,7 @@ func (u *User) SetInfo(ctx context.Context, req *api.Request, rsp *api.Response)
 	return nil
 }
 
-func(u *User) GetUserIDByBuid(ctx context.Context, req *api.Request, rsp *api.Response) error {
+func (u *User) GetUserIDByBuid(ctx context.Context, req *api.Request, rsp *api.Response) error {
 	log.Print("收到 User.GetUserIDByBuid API 请求")
 
 	buid, ok := req.Get["buid"]
@@ -181,10 +182,22 @@ func(u *User) GetUserIDByBuid(ctx context.Context, req *api.Request, rsp *api.Re
 	return nil
 }
 
+type Config struct {
+	App struct {
+		Name string `yaml:"name"`
+	}
+	EndPoint struct {
+		ApiEndpoint string `yaml:"api_endpoint"`
+	}
+}
+
 func main() {
+	config := util.LoadConfig("./config.yaml", &Config{}).(*Config)
+
 	// 创建一个新的服务
 	service := micro.NewService(
 		micro.Name("go.micro.api.message"),
+		micro.Address(config.EndPoint.ApiEndpoint),
 	)
 
 	// 解析命令行参数
