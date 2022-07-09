@@ -8,3 +8,6 @@ alimsg:
 
 grpcset:
   end_point: <your endpoint>
+
+registry:
+  address: <your endpoint>
