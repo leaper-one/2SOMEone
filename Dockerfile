@@ -17,9 +17,13 @@ RUN  make linux-message
 FROM ubuntu:20.04 as user
 WORKDIR /root/
 COPY --from=builder /go/src/2SOMEone/user/linux_amd64/user .
-CMD ["./user"]
+COPY --from=builder /go/src/2SOMEone/user/linux_amd64/api .
+COPY --from=builder /go/src/2SOMEone/user/entrypoint.sh .
+ENTRYPOINT ["/root/entrypoint.sh"]
 
 FROM ubuntu:20.04 as message
 WORKDIR /root/
 COPY --from=builder /go/src/2SOMEone/message/linux_amd64/message .
-CMD ["./message"]
+COPY --from=builder /go/src/2SOMEone/message/linux_amd64/api .
+COPY --from=builder /go/src/2SOMEone/message/entrypoint.sh .
+ENTRYPOINT ["/root/entrypoint.sh"]
