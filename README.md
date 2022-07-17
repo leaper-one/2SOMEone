@@ -33,9 +33,14 @@ $ ls
 ```  
 
 # Start a service
+安装命令行工具
+```sh
+$ go install github.com/go-micro/cli/cmd/go-micro@v1.1.1
 ```
-cd /user
-go run main.go user.go
-go run api/api.go  // API 依赖底层 go.micro.srv.greeter 服务
-micro api --handler=api // 启动 API 网关处理 HTTP 请求，--handle 参数不能为空，否则可能报错
+
+```
+$ cd /user
+$ go run main.go user.go
+$ go run api/api.go  // API 依赖底层 go.micro.srv.greeter 服务
+$ micro api --handler=api // 启动 API 网关处理 HTTP 请求，--handle 参数不能为空，否则可能报错
 ```
