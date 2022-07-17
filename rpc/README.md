@@ -1,5 +1,5 @@
-## 启动 message rpc
+## 启动 rpc
 ```sh
-$ cd 2someone/message/rpc
+$ cd /message-rpc
 $ go run message.go -f etc/message.yaml
 ```

@@ -9,8 +9,8 @@ $ go install github.com/zeromicro/go-zero/tools/goctl@latest
 ## 构建镜像  
 根目录下：
 ```sh
-$ docker build -t message:v1 -f 2someone/message/rpc/message/Dockerfile .
-$ docker build -t message:<tag> -f 2someone/<your_path>/Dockerfile .
+$ docker build -t message-rpc:v1 -f /rpc/message-rpc/Dockerfile .
+$ docker build -t <image-name>:<tag> -f /<your_path>/Dockerfile .
 ```
 
 ## 项目结构
