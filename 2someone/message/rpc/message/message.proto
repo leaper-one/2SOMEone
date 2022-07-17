@@ -4,7 +4,7 @@ package message.v1;
 
 option go_package = "./message";
 
-service MessageService {
+service Message {
   // 向手机号发送验证码
   rpc SentMessageCode(SentMessageCodeRequest) returns (SentMessageCodeResponse) {}
   // 校验验证码

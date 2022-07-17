@@ -1,6 +1,6 @@
 package svc
 
-import "github.com/leaper-one/2SOMEone/2someone/message/rpc/internal/config"
+import "github.com/leaper-one/2SOMEone/2someone/message/rpc/message/internal/config"
 
 type ServiceContext struct {
 	Config config.Config

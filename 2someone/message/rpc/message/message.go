@@ -4,10 +4,10 @@ import (
 	"flag"
 	"fmt"
 
-	"github.com/leaper-one/2SOMEone/2someone/message/rpc/internal/config"
-	"github.com/leaper-one/2SOMEone/2someone/message/rpc/internal/server"
-	"github.com/leaper-one/2SOMEone/2someone/message/rpc/internal/svc"
-	"github.com/leaper-one/2SOMEone/2someone/message/rpc/types/message"
+	"github.com/leaper-one/2SOMEone/2someone/message/rpc/message/internal/config"
+	"github.com/leaper-one/2SOMEone/2someone/message/rpc/message/internal/server"
+	"github.com/leaper-one/2SOMEone/2someone/message/rpc/message/internal/svc"
+	"github.com/leaper-one/2SOMEone/2someone/message/rpc/message/types/message"
 
 	"github.com/zeromicro/go-zero/core/conf"
 	"github.com/zeromicro/go-zero/core/service"
@@ -24,10 +24,10 @@ func main() {
 	var c config.Config
 	conf.MustLoad(*configFile, &c)
 	ctx := svc.NewServiceContext(c)
-	svr := server.NewMessageServiceServer(ctx)
+	svr := server.NewMessageServer(ctx)
 
 	s := zrpc.MustNewServer(c.RpcServerConf, func(grpcServer *grpc.Server) {
-		message.RegisterMessageServiceServer(grpcServer, svr)
+		message.RegisterMessageServer(grpcServer, svr)
 
 		if c.Mode == service.DevMode || c.Mode == service.TestMode {
 			reflection.Register(grpcServer)

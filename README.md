@@ -1,46 +1,13 @@
 # 2SOMEone
 2SOMEone is a brand new social media platform.  
 
-# Proto Buffer complie  
-Install `vscode-proto3` extension in vscode. And make setting file as follow:
-`<root_path>/.vscode/settings.json`  
-``` json
-{
-    "protoc": {
-        "path": "<path of protoc.exe>",
-        "compile_on_save": true,
-        "options": [
-            "--go_out=.",
-            "--go_opt=paths=import",
-            "--go-grpc_out=.",
-            "--go-grpc_opt=paths=import",
-            "${fileBaseName}/${fileBaseName}.proto",
-            "--proto_path=${workspaceRoot}",
-            "--proto_path=${workspaceRoot}/grpc",
-        ]
-    }
-}
-```
-
-# UserService  
-### Start a UserService grpc service  
-> Defalut port: `http://127.0.0.1:50051`  
-
-```sh  
-$ make all
-$ cd user
-$ ls
-```  
-
-# Start a service
-安装命令行工具
+## (安装命令行工具)[https://go-zero.dev/cn/docs/goctl/installation]
 ```sh
-$ go install github.com/go-micro/cli/cmd/go-micro@v1.1.1
+$ go install github.com/zeromicro/go-zero/tools/goctl@latest
 ```
-
-```
-$ cd /user
-$ go run main.go user.go
-$ go run api/api.go  // API 依赖底层 go.micro.srv.greeter 服务
-$ micro api --handler=api // 启动 API 网关处理 HTTP 请求，--handle 参数不能为空，否则可能报错
+## 构建镜像  
+根目录下：
+```sh
+$ docker build -t message:v1 -f 2someone/message/rpc/message/Dockerfile .
+$ docker build -t message:<tag> -f 2someone/<your_path>/Dockerfile .
 ```
