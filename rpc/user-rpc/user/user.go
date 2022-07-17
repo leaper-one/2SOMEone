@@ -6,7 +6,7 @@ package user
 import (
 	"context"
 
-	"github.com/leaper-one/2SOMEone/rpc/user-rpc/types/gen/go/user"
+	"github.com/leaper-one/2SOMEone/rpc/user-rpc/types/user"
 
 	"github.com/zeromicro/go-zero/zrpc"
 	"google.golang.org/grpc"

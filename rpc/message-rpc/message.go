@@ -7,7 +7,7 @@ import (
 	"github.com/leaper-one/2SOMEone/rpc/message-rpc/internal/config"
 	"github.com/leaper-one/2SOMEone/rpc/message-rpc/internal/server"
 	"github.com/leaper-one/2SOMEone/rpc/message-rpc/internal/svc"
-	"github.com/leaper-one/2SOMEone/rpc/message-rpc/types/gen/go/message"
+	"github.com/leaper-one/2SOMEone/rpc/message-rpc/types/message"
 
 	"github.com/zeromicro/go-zero/core/conf"
 	"github.com/zeromicro/go-zero/core/service"

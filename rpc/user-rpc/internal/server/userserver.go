@@ -8,7 +8,7 @@ import (
 
 	"github.com/leaper-one/2SOMEone/rpc/user-rpc/internal/logic"
 	"github.com/leaper-one/2SOMEone/rpc/user-rpc/internal/svc"
-	"github.com/leaper-one/2SOMEone/rpc/user-rpc/types/gen/go/user"
+	"github.com/leaper-one/2SOMEone/rpc/user-rpc/types/user"
 )
 
 type UserServer struct {

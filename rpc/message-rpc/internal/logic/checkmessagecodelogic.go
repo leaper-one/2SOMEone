@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/leaper-one/2SOMEone/rpc/message-rpc/internal/svc"
-	"github.com/leaper-one/2SOMEone/rpc/message-rpc/types/gen/go/message"
+	"github.com/leaper-one/2SOMEone/rpc/message-rpc/types/message"
 
 	"github.com/zeromicro/go-zero/core/logx"
 )

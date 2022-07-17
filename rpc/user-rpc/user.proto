@@ -4,7 +4,7 @@ syntax = "proto3";
 
 package user.v1;
 
-option go_package = "./gen/go/user";
+option go_package = "./user";
 
 service User {
     // 通过手机号注册，需要验证码

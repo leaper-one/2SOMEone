@@ -8,7 +8,7 @@ import (
 
 	"github.com/leaper-one/2SOMEone/rpc/message-rpc/internal/logic"
 	"github.com/leaper-one/2SOMEone/rpc/message-rpc/internal/svc"
-	"github.com/leaper-one/2SOMEone/rpc/message-rpc/types/gen/go/message"
+	"github.com/leaper-one/2SOMEone/rpc/message-rpc/types/message"
 )
 
 type MessageServer struct {
