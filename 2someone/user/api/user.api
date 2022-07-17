@@ -1,0 +1,73 @@
+syntax = "v1"
+
+info (
+	title: 2SOMEone-user
+	desc: // TODO: add description
+	author: "tymon42"
+	email: "tymon42@outlook.com"
+)
+
+type sentPhoneCodeResp {
+	Code   int32  `json:"code"`
+	Msg    string `json:"msg"`
+	Msg_id uint64 `json:"msg_id"`
+}
+
+type signUpReq {
+	Phone      string `json:"phone"`
+	Phone_code string `json:"phone_code"`
+	Password   string `json:"password"`
+	Msg_id     uint64 `json:"msg_id"`
+}
+
+type signUpResp {
+	Code    int32  `json:"code"`
+	Msg     string `json:"msg"`
+	User_id int64  `json:"user_id"`
+	Token   string `json:"token"`
+}
+
+type signInReq {
+	Phone    string `json:"phone"`
+	Password string `json:"password"`
+}
+
+type signInResp {
+	Code  int32  `json:"code"`
+	Msg   string `json:"msg"`
+	Token string `json:"token"`
+}
+
+type getuseridReq {
+	// B站 UID
+	Buid uint64 `json:"buid, optional"`
+}
+
+type getuseridResp {
+	Code    int32  `json:"code"`
+	Msg     string `json:"msg"`
+	User_id string `json:"user_id"`
+}
+
+@server(
+	// handler: AccountsHandler
+	prefix: "/user/v1"
+	group: accounts
+	
+)
+service user-api {
+	@doc "发送验证码"
+	@handler sentPhoneCode
+	
+	get /sent-phone-code/:phone returns(sentPhoneCodeResp)
+	
+	@doc "注册"
+	@handler signUp
+	post /signup(signUpReq) returns(signUpResp)
+	
+	@doc "登录"
+	@handler signIn
+	post /signin(signInReq) returns(signInResp)
+}
+
+// get /getuserid(getuseridReq) returns(getuseridResp)
