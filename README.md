@@ -15,24 +15,10 @@ $ docker build -t message:<tag> -f 2someone/<your_path>/Dockerfile .
 
 ## 项目结构
 ```
-├─api
-│  └─user-api
-│      
-├─core
-├─message
-├─rpc
-│  ├─message-rpc
-│  │     
-│  └─user-rpc
-│ 
-├─service
-│  ├─message
-│  └─user
-├─store
-│  ├─bili_user
-│  ├─msg
-│  ├─note
-│  └─user
-├─user
-└─util
+├─api -- api 网关
+├─core -- 数据库定义
+├─rpc -- rpc 层
+├─service -- 业务代码
+├─store -- CRUD
+└─util -- 相关工具
 ```
