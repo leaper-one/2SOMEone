@@ -1,7 +1,7 @@
 # 2SOMEone
 2SOMEone is a brand new social media platform.  
 
-## (安装命令行工具)[https://go-zero.dev/cn/docs/goctl/installation]
+## [安装命令行工具](https://go-zero.dev/cn/docs/goctl/installation)
 ```sh
 $ go install github.com/zeromicro/go-zero/tools/goctl@latest
 ```
