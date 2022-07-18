@@ -18,6 +18,10 @@ import (
 	"github.com/gofrs/uuid"
 )
 
+var (
+	dbc    = util.OpenDB("./user.db")
+)
+
 func NewUserService(
 	db *util.DB,
 ) *UserService {
@@ -30,8 +34,17 @@ type UserService struct {
 	db *util.DB
 }
 
-func (a *UserService) SignUpByPhone(ctx context.Context, phone, password string) error {
-	// TODO: 校验手机验证码
+func SignUpByPhone(ctx context.Context, phone, password string) error {
+	userService := NewUserService(dbc)
+	err := userService.signUpByPhone(ctx, phone, password)
+	if err != nil {
+		return errors.New("注册失败")
+	}
+	return nil
+}
+
+func (a *UserService) signUpByPhone(ctx context.Context, phone, password string) error {
+	// TODO: 检车用户是否存在
 
 	// 创建用户
 	userStore := user.NewUserStore(a.db)
