@@ -7,6 +7,10 @@ info (
 	email: "tymon42@outlook.com"
 )
 
+type sentPhoneCodeReq {
+	Phone string `path:"phone"`
+}
+
 type sentPhoneCodeResp {
 	Code   int32  `json:"code"`
 	Msg    string `json:"msg"`
@@ -59,7 +63,7 @@ service user-api {
 	@doc "发送验证码"
 	@handler sentPhoneCode
 	
-	get /sent-phone-code/:phone returns(sentPhoneCodeResp)
+	get /sent-phone-code/:phone(sentPhoneCodeReq) returns(sentPhoneCodeResp)
 	
 	@doc "注册"
 	@handler signUp

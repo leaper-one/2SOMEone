@@ -5,6 +5,7 @@ import (
 
 	"github.com/leaper-one/2SOMEone/api/user-api/internal/svc"
 	"github.com/leaper-one/2SOMEone/api/user-api/internal/types"
+	"github.com/leaper-one/2SOMEone/rpc/user-rpc/types/user"
 
 	"github.com/zeromicro/go-zero/core/logx"
 )
@@ -24,7 +25,16 @@ func NewSignInLogic(ctx context.Context, svcCtx *svc.ServiceContext) *SignInLogi
 }
 
 func (l *SignInLogic) SignIn(req *types.SignInReq) (resp *types.SignInResp, err error) {
-	// todo: add your logic here and delete this line
-
-	return
+	res, err:= l.svcCtx.User.SignInByPhone(l.ctx, &user.SignInByPhoneRequest{
+		Phone: req.Phone,
+		Password: req.Password,
+	})
+	if err != nil {
+		return &types.SignInResp{}, err
+	}
+	return &types.SignInResp{
+		Code: res.Code,
+		Msg: res.Msg,
+		Token: res.Token,
+	}, nil
 }
