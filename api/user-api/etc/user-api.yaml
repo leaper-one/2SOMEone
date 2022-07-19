@@ -11,3 +11,6 @@ Message:
     Hosts:
      - 127.0.0.1:2379
     Key: message.rpc
+Auth:
+  AccessSecret: <AccessSecret>
+  AccessExpire: 604800

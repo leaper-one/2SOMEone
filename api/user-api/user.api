@@ -54,24 +54,76 @@ type getuseridResp {
 }
 
 @server(
-	// handler: AccountsHandler
 	prefix: "/user/v1"
-	group: accounts
-	
+	group: user
 )
 service user-api {
 	@doc "发送验证码"
-	@handler sentPhoneCode
-	
+	@handler sentPhoneCodeHandler
 	get /sent-phone-code/:phone(sentPhoneCodeReq) returns(sentPhoneCodeResp)
 	
 	@doc "注册"
-	@handler signUp
+	@handler signUpHandler
 	post /signup(signUpReq) returns(signUpResp)
 	
 	@doc "登录"
-	@handler signIn
+	@handler signInHandler
 	post /signin(signInReq) returns(signInResp)
 }
 
-// get /getuserid(getuseridReq) returns(getuseridResp)
+type meResp {
+	Code   int32  `json:"code"`
+	Msg    string `json:"msg"`
+	UserId string `json:"user_id"`
+	Name   string `json:"name"`
+	Avatar string `json:"avatar"`
+	Buid   int64  `json:"buid"`
+	Email  string `json:"email"`
+	Phone  string `json:"phone"`
+}
+
+type setInfoReq {
+	Name   string `json:"name"`
+	Avatar string `json:"avatar"`
+	Buid   string `json:"buid"`
+}
+
+type setInfoResp {
+	Code int32  `json:"code"`
+	Msg  string `json:"msg"`
+}
+
+@server(
+	prefix: "/account/v1"
+	group: accounts
+	jwt: Auth
+)
+service user-api {
+	@doc "获取当前用户信息 jwt"
+	@handler getMeHandler
+	get /me returns(meResp)
+	
+	@doc "设置用户信息"
+	@handler setInfoHandler
+	post /setInfo(setInfoReq) returns(setInfoResp)
+}
+
+type getUserIdByBuidReq {
+	Buid int64 `json:"buid"`
+}
+
+type getUserIdByBuidResp {
+	Code   int32  `json:"code"`
+	Msg    string `json:"msg"`
+	UserId string `json:"user_id"`
+}
+
+@server(
+	prefix: "/app/v1"
+	group: app
+)
+service user-api {
+	@doc "根据 buid 获取 user_id 仅测试用"
+	@handler getUserIdByBuidHandler
+	get /get-userid-by-buid(getUserIdByBuidReq) returns(getUserIdByBuidResp)
+}

@@ -45,3 +45,35 @@ type GetuseridResp struct {
 	Msg     string `json:"msg"`
 	User_id string `json:"user_id"`
 }
+
+type MeResp struct {
+	Code   int32  `json:"code"`
+	Msg    string `json:"msg"`
+	UserId string `json:"user_id"`
+	Name   string `json:"name"`
+	Avatar string `json:"avatar"`
+	Buid   int64  `json:"buid"`
+	Email  string `json:"email"`
+	Phone  string `json:"phone"`
+}
+
+type SetInfoReq struct {
+	Name   string `json:"name"`
+	Avatar string `json:"avatar"`
+	Buid   string `json:"buid"`
+}
+
+type SetInfoResp struct {
+	Code int32  `json:"code"`
+	Msg  string `json:"msg"`
+}
+
+type GetUserIdByBuidReq struct {
+	Buid int64 `json:"buid"`
+}
+
+type GetUserIdByBuidResp struct {
+	Code   int32  `json:"code"`
+	Msg    string `json:"msg"`
+	UserId string `json:"user_id"`
+}

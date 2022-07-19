@@ -1,4 +1,4 @@
-package accounts
+package user
 
 import (
 	"context"
@@ -10,32 +10,31 @@ import (
 	"github.com/zeromicro/go-zero/core/logx"
 )
 
-type SignUpLogic struct {
+type SignInLogic struct {
 	logx.Logger
 	ctx    context.Context
 	svcCtx *svc.ServiceContext
 }
 
-func NewSignUpLogic(ctx context.Context, svcCtx *svc.ServiceContext) *SignUpLogic {
-	return &SignUpLogic{
+func NewSignInLogic(ctx context.Context, svcCtx *svc.ServiceContext) *SignInLogic {
+	return &SignInLogic{
 		Logger: logx.WithContext(ctx),
 		ctx:    ctx,
 		svcCtx: svcCtx,
 	}
 }
 
-func (l *SignUpLogic) SignUp(req *types.SignUpReq) (resp *types.SignUpResp, err error) {
-	res, err:= l.svcCtx.User.SignUpByPhone(l.ctx, &user.SignUpByPhoneRequest{
+func (l *SignInLogic) SignIn(req *types.SignInReq) (resp *types.SignInResp, err error) {
+	res, err:= l.svcCtx.User.SignInByPhone(l.ctx, &user.SignInByPhoneRequest{
 		Phone: req.Phone,
-		Code: req.Phone_code,
 		Password: req.Password,
-		MsgId: req.Msg_id,
 	})
 	if err != nil {
-		return &types.SignUpResp{}, err
+		return &types.SignInResp{}, err
 	}
-	return &types.SignUpResp{
+	return &types.SignInResp{
 		Code: res.Code,
 		Msg: res.Msg,
+		Token: res.Token,
 	}, nil
 }

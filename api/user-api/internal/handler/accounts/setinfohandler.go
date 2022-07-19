@@ -7,19 +7,18 @@ import (
 	"github.com/leaper-one/2SOMEone/api/user-api/internal/svc"
 	"github.com/leaper-one/2SOMEone/api/user-api/internal/types"
 	"github.com/zeromicro/go-zero/rest/httpx"
-
 )
 
-func SentPhoneCodeHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
+func SetInfoHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		var req types.SentPhoneCodeReq
+		var req types.SetInfoReq
 		if err := httpx.Parse(r, &req); err != nil {
 			httpx.Error(w, err)
 			return
 		}
 
-		l := accounts.NewSentPhoneCodeLogic(r.Context(), svcCtx)
-		resp, err := l.SentPhoneCode(&req)
+		l := accounts.NewSetInfoLogic(r.Context(), svcCtx)
+		resp, err := l.SetInfo(&req)
 		if err != nil {
 			httpx.Error(w, err)
 		} else {

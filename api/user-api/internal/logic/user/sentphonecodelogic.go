@@ -1,4 +1,4 @@
-package accounts
+package user
 
 import (
 	"context"
@@ -6,7 +6,6 @@ import (
 	"github.com/leaper-one/2SOMEone/api/user-api/internal/svc"
 	"github.com/leaper-one/2SOMEone/api/user-api/internal/types"
 	"github.com/leaper-one/2SOMEone/rpc/message-rpc/types/message"
-
 	"github.com/zeromicro/go-zero/core/logx"
 )
 
@@ -35,4 +34,5 @@ func (l *SentPhoneCodeLogic) SentPhoneCode(req *types.SentPhoneCodeReq) (resp *t
 		Code: res.Code,
 		Msg:  res.Msg,
 	}, nil
+
 }

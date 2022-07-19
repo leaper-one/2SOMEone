@@ -62,9 +62,9 @@ func (a *UserService) signUpByPhone(ctx context.Context, phone, password string)
 	return nil
 }
 
-func Auth(ctx context.Context, phone, password string) (string, error) {
+func Auth(ctx context.Context, phone, password, secretKey string, expireDuration time.Duration) (string, error) {
 	userService := NewUserService(dbc)
-	token, err := userService.auth(ctx, phone, password)
+	token, err := userService.auth(ctx, phone, password, secretKey, expireDuration)
 	if err != nil {
 		return "", err
 	}
@@ -72,7 +72,7 @@ func Auth(ctx context.Context, phone, password string) (string, error) {
 }
 
 // func (a *UserService) Login(ctx context.Context, token string) (*core.BasicUser, error) {}
-func (a *UserService) auth(ctx context.Context, phone, password string) (string, error) {
+func (a *UserService) auth(ctx context.Context, phone, password, secretKey string, expireDuration time.Duration) (string, error) {
 	userStore := user.NewUserStore(a.db)
 	user, err := userStore.FindByPhone(ctx, phone)
 	if err != nil {
@@ -81,7 +81,7 @@ func (a *UserService) auth(ctx context.Context, phone, password string) (string,
 		return "", errors.New("该手机号未绑定")
 	}
 	if util.CheckPasswordHash(password, user.Password) {
-		token, err := util.GenerateToken(user.UserID, user.Phone, time.Hour*7*24)
+		token, err := util.GenerateToken(user.UserID, user.Phone, secretKey, expireDuration)
 		if err != nil {
 			return "", err
 		}
