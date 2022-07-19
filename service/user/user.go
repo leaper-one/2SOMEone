@@ -19,7 +19,7 @@ import (
 )
 
 var (
-	dbc    = util.OpenDB("./user.db")
+	dbc = util.OpenDB("./user.db")
 )
 
 func NewUserService(
@@ -62,8 +62,17 @@ func (a *UserService) signUpByPhone(ctx context.Context, phone, password string)
 	return nil
 }
 
+func Auth(ctx context.Context, phone, password string) (string, error) {
+	userService := NewUserService(dbc)
+	token, err := userService.auth(ctx, phone, password)
+	if err != nil {
+		return "", err
+	}
+	return token, nil
+}
+
 // func (a *UserService) Login(ctx context.Context, token string) (*core.BasicUser, error) {}
-func (a *UserService) Auth(ctx context.Context, phone, password string) (string, error) {
+func (a *UserService) auth(ctx context.Context, phone, password string) (string, error) {
 	userStore := user.NewUserStore(a.db)
 	user, err := userStore.FindByPhone(ctx, phone)
 	if err != nil {
