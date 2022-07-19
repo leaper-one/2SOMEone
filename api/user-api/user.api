@@ -71,6 +71,9 @@ service user-api {
 	post /signin(signInReq) returns(signInResp)
 }
 
+type meReq {
+	Authorization string `header:"Authorization"`
+}
 type meResp {
 	Code   int32  `json:"code"`
 	Msg    string `json:"msg"`
@@ -83,9 +86,10 @@ type meResp {
 }
 
 type setInfoReq {
-	Name   string `json:"name"`
-	Avatar string `json:"avatar"`
-	Buid   string `json:"buid"`
+	Authorization string `header:"Authorization"`
+	Name          string `json:"name"`
+	Avatar        string `json:"avatar"`
+	Buid          string `json:"buid"`
 }
 
 type setInfoResp {
@@ -101,7 +105,7 @@ type setInfoResp {
 service user-api {
 	@doc "获取当前用户信息 jwt"
 	@handler getMeHandler
-	get /me returns(meResp)
+	get /me(meReq) returns(meResp)
 	
 	@doc "设置用户信息"
 	@handler setInfoHandler

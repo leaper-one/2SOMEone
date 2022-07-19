@@ -27,6 +27,14 @@
             }
           }
         },
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "query",
+            "required": true,
+            "type": "string"
+          }
+        ],
         "requestBody": {},
         "tags": [
           "accounts"
@@ -240,6 +248,18 @@
         "user_id"
       ]
     },
+    "meReq": {
+      "type": "object",
+      "properties": {
+        "Authorization": {
+          "type": "string"
+        }
+      },
+      "title": "meReq",
+      "required": [
+        "Authorization"
+      ]
+    },
     "meResp": {
       "type": "object",
       "properties": {
@@ -319,6 +339,9 @@
     "setInfoReq": {
       "type": "object",
       "properties": {
+        "Authorization": {
+          "type": "string"
+        },
         "name": {
           "type": "string"
         },
@@ -331,6 +354,7 @@
       },
       "title": "setInfoReq",
       "required": [
+        "Authorization",
         "name",
         "avatar",
         "buid"

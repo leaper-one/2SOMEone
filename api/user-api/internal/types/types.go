@@ -46,6 +46,10 @@ type GetuseridResp struct {
 	User_id string `json:"user_id"`
 }
 
+type MeReq struct {
+	Authorization string `header:"Authorization"`
+}
+
 type MeResp struct {
 	Code   int32  `json:"code"`
 	Msg    string `json:"msg"`
@@ -58,9 +62,10 @@ type MeResp struct {
 }
 
 type SetInfoReq struct {
-	Name   string `json:"name"`
-	Avatar string `json:"avatar"`
-	Buid   string `json:"buid"`
+	Authorization string `header:"Authorization"`
+	Name          string `json:"name"`
+	Avatar        string `json:"avatar"`
+	Buid          string `json:"buid"`
 }
 
 type SetInfoResp struct {
