@@ -54,7 +54,7 @@ type getuseridResp {
 }
 
 @server(
-	prefix: "/user/v1"
+	prefix: /user/v1
 	group: user
 )
 service user-api {
@@ -94,7 +94,7 @@ type setInfoResp {
 }
 
 @server(
-	prefix: "/account/v1"
+	prefix: /account/v1
 	group: accounts
 	jwt: Auth
 )
@@ -119,7 +119,7 @@ type getUserIdByBuidResp {
 }
 
 @server(
-	prefix: "/app/v1"
+	prefix: /app/v1
 	group: app
 )
 service user-api {
