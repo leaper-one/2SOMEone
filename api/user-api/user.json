@@ -1,0 +1,482 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "",
+    "version": ""
+  },
+  "schemes": [
+    "http",
+    "https"
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/account/v1/me": {
+      "get": {
+        "summary": "获取当前用户信息 jwt",
+        "operationId": "getMeHandler",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/meResp"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "query",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "requestBody": {},
+        "tags": [
+          "accounts"
+        ]
+      }
+    },
+    "/account/v1/setInfo": {
+      "post": {
+        "summary": "设置用户信息",
+        "operationId": "setInfoHandler",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/setInfoResp"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/setInfoReq"
+            }
+          }
+        ],
+        "requestBody": {},
+        "tags": [
+          "accounts"
+        ]
+      }
+    },
+    "/app/v1/get-userid-by-buid": {
+      "get": {
+        "summary": "根据 buid 获取 user_id 仅测试用",
+        "operationId": "getUserIdByBuidHandler",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/getUserIdByBuidResp"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "buid",
+            "in": "query",
+            "required": true,
+            "type": "integer",
+            "format": "int64"
+          }
+        ],
+        "requestBody": {},
+        "tags": [
+          "app"
+        ]
+      }
+    },
+    "/user/v1/sent-phone-code/{phone}": {
+      "get": {
+        "summary": "发送验证码",
+        "operationId": "sentPhoneCodeHandler",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/sentPhoneCodeResp"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "phone",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "requestBody": {},
+        "tags": [
+          "user"
+        ]
+      }
+    },
+    "/user/v1/signin": {
+      "post": {
+        "summary": "登录",
+        "operationId": "signInHandler",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/signInResp"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/signInReq"
+            }
+          }
+        ],
+        "requestBody": {},
+        "tags": [
+          "user"
+        ]
+      }
+    },
+    "/user/v1/signup": {
+      "post": {
+        "summary": "注册",
+        "operationId": "signUpHandler",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/signUpResp"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/signUpReq"
+            }
+          }
+        ],
+        "requestBody": {},
+        "tags": [
+          "user"
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "getUserIdByBuidReq": {
+      "type": "object",
+      "properties": {
+        "buid": {
+          "type": "integer",
+          "format": "int64"
+        }
+      },
+      "title": "getUserIdByBuidReq",
+      "required": [
+        "buid"
+      ]
+    },
+    "getUserIdByBuidResp": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "msg": {
+          "type": "string"
+        },
+        "user_id": {
+          "type": "string"
+        }
+      },
+      "title": "getUserIdByBuidResp",
+      "required": [
+        "code",
+        "msg",
+        "user_id"
+      ]
+    },
+    "getuseridReq": {
+      "type": "object",
+      "properties": {
+        "buid": {
+          "type": "integer",
+          "format": "int64"
+        }
+      },
+      "title": "getuseridReq",
+      "required": [
+        "buid"
+      ]
+    },
+    "getuseridResp": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "msg": {
+          "type": "string"
+        },
+        "user_id": {
+          "type": "string"
+        }
+      },
+      "title": "getuseridResp",
+      "required": [
+        "code",
+        "msg",
+        "user_id"
+      ]
+    },
+    "meReq": {
+      "type": "object",
+      "properties": {
+        "Authorization": {
+          "type": "string"
+        }
+      },
+      "title": "meReq",
+      "required": [
+        "Authorization"
+      ]
+    },
+    "meResp": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "msg": {
+          "type": "string"
+        },
+        "user_id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "avatar": {
+          "type": "string"
+        },
+        "buid": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "email": {
+          "type": "string"
+        },
+        "phone": {
+          "type": "string"
+        }
+      },
+      "title": "meResp",
+      "required": [
+        "code",
+        "msg",
+        "user_id",
+        "name",
+        "avatar",
+        "buid",
+        "email",
+        "phone"
+      ]
+    },
+    "sentPhoneCodeReq": {
+      "type": "object",
+      "properties": {
+        "phone": {
+          "type": "string"
+        }
+      },
+      "title": "sentPhoneCodeReq",
+      "required": [
+        "phone"
+      ]
+    },
+    "sentPhoneCodeResp": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "msg": {
+          "type": "string"
+        },
+        "msg_id": {
+          "type": "integer",
+          "format": "int64"
+        }
+      },
+      "title": "sentPhoneCodeResp",
+      "required": [
+        "code",
+        "msg",
+        "msg_id"
+      ]
+    },
+    "setInfoReq": {
+      "type": "object",
+      "properties": {
+        "Authorization": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "avatar": {
+          "type": "string"
+        },
+        "buid": {
+          "type": "string"
+        }
+      },
+      "title": "setInfoReq",
+      "required": [
+        "Authorization",
+        "name",
+        "avatar",
+        "buid"
+      ]
+    },
+    "setInfoResp": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "msg": {
+          "type": "string"
+        }
+      },
+      "title": "setInfoResp",
+      "required": [
+        "code",
+        "msg"
+      ]
+    },
+    "signInReq": {
+      "type": "object",
+      "properties": {
+        "phone": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string"
+        }
+      },
+      "title": "signInReq",
+      "required": [
+        "phone",
+        "password"
+      ]
+    },
+    "signInResp": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "msg": {
+          "type": "string"
+        },
+        "token": {
+          "type": "string"
+        }
+      },
+      "title": "signInResp",
+      "required": [
+        "code",
+        "msg",
+        "token"
+      ]
+    },
+    "signUpReq": {
+      "type": "object",
+      "properties": {
+        "phone": {
+          "type": "string"
+        },
+        "phone_code": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string"
+        },
+        "msg_id": {
+          "type": "integer",
+          "format": "int64"
+        }
+      },
+      "title": "signUpReq",
+      "required": [
+        "phone",
+        "phone_code",
+        "password",
+        "msg_id"
+      ]
+    },
+    "signUpResp": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "msg": {
+          "type": "string"
+        },
+        "user_id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "token": {
+          "type": "string"
+        }
+      },
+      "title": "signUpResp",
+      "required": [
+        "code",
+        "msg",
+        "user_id",
+        "token"
+      ]
+    }
+  },
+  "securityDefinitions": {
+    "apiKey": {
+      "type": "apiKey",
+      "description": "Enter JWT Bearer token **_only_**",
+      "name": "Authorization",
+      "in": "header"
+    }
+  },
+  "security": [
+    {
+      "apiKey": []
+    }
+  ]
+}

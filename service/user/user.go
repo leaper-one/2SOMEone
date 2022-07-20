@@ -18,6 +18,10 @@ import (
 	"github.com/gofrs/uuid"
 )
 
+var (
+	dbc = util.OpenDB("./user.db")
+)
+
 func NewUserService(
 	db *util.DB,
 ) *UserService {
@@ -30,8 +34,17 @@ type UserService struct {
 	db *util.DB
 }
 
-func (a *UserService) SignUpByPhone(ctx context.Context, phone, password string) error {
-	// TODO: 校验手机验证码
+func SignUpByPhone(ctx context.Context, phone, password string) error {
+	userService := NewUserService(dbc)
+	err := userService.signUpByPhone(ctx, phone, password)
+	if err != nil {
+		return errors.New("注册失败")
+	}
+	return nil
+}
+
+func (a *UserService) signUpByPhone(ctx context.Context, phone, password string) error {
+	// TODO: 检车用户是否存在
 
 	// 创建用户
 	userStore := user.NewUserStore(a.db)
@@ -49,8 +62,17 @@ func (a *UserService) SignUpByPhone(ctx context.Context, phone, password string)
 	return nil
 }
 
+func Auth(ctx context.Context, phone, password, secretKey string, expireDuration time.Duration) (string, error) {
+	userService := NewUserService(dbc)
+	token, err := userService.auth(ctx, phone, password, secretKey, expireDuration)
+	if err != nil {
+		return "", err
+	}
+	return token, nil
+}
+
 // func (a *UserService) Login(ctx context.Context, token string) (*core.BasicUser, error) {}
-func (a *UserService) Auth(ctx context.Context, phone, password string) (string, error) {
+func (a *UserService) auth(ctx context.Context, phone, password, secretKey string, expireDuration time.Duration) (string, error) {
 	userStore := user.NewUserStore(a.db)
 	user, err := userStore.FindByPhone(ctx, phone)
 	if err != nil {
@@ -59,7 +81,7 @@ func (a *UserService) Auth(ctx context.Context, phone, password string) (string,
 		return "", errors.New("该手机号未绑定")
 	}
 	if util.CheckPasswordHash(password, user.Password) {
-		token, err := util.GenerateToken(user.UserID, user.Phone, time.Hour*7*24)
+		token, err := util.GenerateToken(user.UserID, user.Phone, secretKey, expireDuration)
 		if err != nil {
 			return "", err
 		}
@@ -68,7 +90,16 @@ func (a *UserService) Auth(ctx context.Context, phone, password string) (string,
 	return "", errors.New("密码错误")
 }
 
-func (a *UserService) SetInfo(ctx context.Context, user_id, name, avatar, buid string) error {
+func SetInfo(ctx context.Context, user_id, name, avatar, buid string) error {
+	userService:= NewUserService(dbc)
+	err := userService.setInfo(ctx, user_id, name, avatar, buid)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (a *UserService) setInfo(ctx context.Context, user_id, name, avatar, buid string) error {
 	userStore := user.NewUserStore(a.db)
 	user, err := userStore.FindByUserID(ctx, user_id)
 	if err != nil {
@@ -131,7 +162,16 @@ func (a *UserService) SetInfo(ctx context.Context, user_id, name, avatar, buid s
 	return nil
 }
 
-func (a *UserService) GetMe(ctx context.Context, user_id string) (*core.BasicUser, error) {
+func GetMe(ctx context.Context, user_id string) (*core.BasicUser, error) {
+	userService := NewUserService(dbc)
+	user, err := userService.getMe(ctx, user_id)
+	if err != nil {
+		return nil, err
+	}
+	return user, nil
+}
+
+func (a *UserService) getMe(ctx context.Context, user_id string) (*core.BasicUser, error) {
 	userStore := user.NewUserStore(a.db)
 	// user, err := userStore.FindByPhone(ctx, .Phone)
 	user, err := userStore.FindByUserID(ctx, user_id)
@@ -143,7 +183,16 @@ func (a *UserService) GetMe(ctx context.Context, user_id string) (*core.BasicUse
 	return user, nil
 }
 
-func (a *UserService) FindByBuid(ctx context.Context, buid int64) (*core.BiliUser, error) {
+func FindByBuid(ctx context.Context, buid int64) (*core.BiliUser, error) {
+	userService := NewUserService(dbc)
+	user, err := userService.findByBuid(ctx, buid)
+	if err != nil {
+		return nil, err
+	}
+	return user, nil
+}
+
+func (a *UserService) findByBuid(ctx context.Context, buid int64) (*core.BiliUser, error) {
 	biliUserStore := bili_user.NewBiliUserStore(a.db)
 	buser, err := biliUserStore.FindByBuid(ctx, buid)
 	if err != nil {

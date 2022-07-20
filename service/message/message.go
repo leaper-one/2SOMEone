@@ -14,6 +14,23 @@ import (
 	dysmsapi "github.com/aliyun/alibaba-cloud-sdk-go/services/dysmsapi"
 )
 
+var (
+	config = util.LoadConfig("./config.yaml", &Config{}).(*Config)
+	dbc    = util.OpenDB("./message.db")
+)
+
+type MessageService struct{}
+
+// config struct
+// app, alimsg, grpcset
+type Config struct {
+	AliMsg struct {
+		RegionId        string `yaml:"region_id"`
+		AccessKeyId     string `yaml:"access_key_id"`
+		AccessKeySecret string `yaml:"access_key_secret"`
+	}
+}
+
 // params: db, region_id, access_key_id, access_key_secret
 func NewMsgService(db *util.DB, msg_config ...string) *MsgService {
 	// 初始化阿里云短信服务客户端
@@ -38,8 +55,13 @@ type MsgService struct {
 	client *dysmsapi.Client
 }
 
+func SendPhoneCode(ctx context.Context, phone string) (string, uint64, error) {
+	msgService := NewMsgService(dbc, config.AliMsg.RegionId, config.AliMsg.AccessKeyId, config.AliMsg.AccessKeySecret)
+	return msgService.sendPhoneCode(ctx, phone)
+}
+
 // Send random code to phone via aliyun msg api
-func (a *MsgService) SendPhoneCode(ctx context.Context, phone string) (string, uint64, error) {
+func (a *MsgService) sendPhoneCode(ctx context.Context, phone string) (string, uint64, error) {
 	// 初始化 msg store
 	msgStore := msg.New(a.db)
 
@@ -72,8 +94,13 @@ func (a *MsgService) SendPhoneCode(ctx context.Context, phone string) (string, u
 	return msg.Code, uint64(msg.ID), nil
 }
 
+func CheckPhoneCode(ctx context.Context, phone, code string, msg_id uint) (bool, error) {
+	msgService := NewMsgService(dbc, config.AliMsg.RegionId, config.AliMsg.AccessKeyId, config.AliMsg.AccessKeySecret)
+	return msgService.checkPhoneCode(ctx, phone, code, msg_id)
+}
+
 // CheckPhoneCode check random code with phone and msg_id
-func (a *MsgService) CheckPhoneCode(ctx context.Context, phone, code string, msg_id uint) (bool, error) {
+func (a *MsgService) checkPhoneCode(ctx context.Context, phone, code string, msg_id uint) (bool, error) {
 	msgStore := msg.New(a.db)
 	msg, err := msgStore.Find(ctx, msg_id, phone)
 	if err != nil {
