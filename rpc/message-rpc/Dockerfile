@@ -1,18 +1,13 @@
 FROM golang:1.17.10 AS builder
 
-LABEL stage=gobuilder
-
 ENV CGO_ENABLED 1
+ENV GO111MODULE=on
+ENV GOARCH=amd64
+ENV GOOS=linux
 ENV GOPROXY https://goproxy.cn,direct
-RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
-
-RUN apk update --no-cache && apk add --no-cache tzdata
 
 WORKDIR /build
 
-ADD go.mod .
-ADD go.sum .
-RUN go mod download
 COPY . .
 COPY rpc/message-rpc/etc /app/etc
 RUN go build -o /app/message rpc/message-rpc/message.go
