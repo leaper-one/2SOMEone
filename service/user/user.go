@@ -90,7 +90,16 @@ func (a *UserService) auth(ctx context.Context, phone, password, secretKey strin
 	return "", errors.New("密码错误")
 }
 
-func (a *UserService) SetInfo(ctx context.Context, user_id, name, avatar, buid string) error {
+func SetInfo(ctx context.Context, user_id, name, avatar, buid string) error {
+	userService:= NewUserService(dbc)
+	err := userService.setInfo(ctx, user_id, name, avatar, buid)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (a *UserService) setInfo(ctx context.Context, user_id, name, avatar, buid string) error {
 	userStore := user.NewUserStore(a.db)
 	user, err := userStore.FindByUserID(ctx, user_id)
 	if err != nil {
@@ -153,7 +162,16 @@ func (a *UserService) SetInfo(ctx context.Context, user_id, name, avatar, buid s
 	return nil
 }
 
-func (a *UserService) GetMe(ctx context.Context, user_id string) (*core.BasicUser, error) {
+func GetMe(ctx context.Context, user_id string) (*core.BasicUser, error) {
+	userService := NewUserService(dbc)
+	user, err := userService.getMe(ctx, user_id)
+	if err != nil {
+		return nil, err
+	}
+	return user, nil
+}
+
+func (a *UserService) getMe(ctx context.Context, user_id string) (*core.BasicUser, error) {
 	userStore := user.NewUserStore(a.db)
 	// user, err := userStore.FindByPhone(ctx, .Phone)
 	user, err := userStore.FindByUserID(ctx, user_id)
@@ -165,7 +183,16 @@ func (a *UserService) GetMe(ctx context.Context, user_id string) (*core.BasicUse
 	return user, nil
 }
 
-func (a *UserService) FindByBuid(ctx context.Context, buid int64) (*core.BiliUser, error) {
+func FindByBuid(ctx context.Context, buid int64) (*core.BiliUser, error) {
+	userService := NewUserService(dbc)
+	user, err := userService.findByBuid(ctx, buid)
+	if err != nil {
+		return nil, err
+	}
+	return user, nil
+}
+
+func (a *UserService) findByBuid(ctx context.Context, buid int64) (*core.BiliUser, error) {
 	biliUserStore := bili_user.NewBiliUserStore(a.db)
 	buser, err := biliUserStore.FindByBuid(ctx, buid)
 	if err != nil {

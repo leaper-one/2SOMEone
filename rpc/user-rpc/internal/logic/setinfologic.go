@@ -5,6 +5,7 @@ import (
 
 	"github.com/leaper-one/2SOMEone/rpc/user-rpc/internal/svc"
 	"github.com/leaper-one/2SOMEone/rpc/user-rpc/types/user"
+	user_service "github.com/leaper-one/2SOMEone/service/user"
 
 	"github.com/zeromicro/go-zero/core/logx"
 )
@@ -25,7 +26,17 @@ func NewSetInfoLogic(ctx context.Context, svcCtx *svc.ServiceContext) *SetInfoLo
 
 //  jwt needed in metadata
 func (l *SetInfoLogic) SetInfo(in *user.SetInfoRequest) (*user.SetInfoResponse, error) {
-	// todo: add your logic here and delete this line
-
-	return &user.SetInfoResponse{}, nil
+	// logx.Info("rpc user-rpc userId: %d", l.ctx.Value("user_id"))
+	// user_id := l.ctx.Value("user_id").(string)
+	err := user_service.SetInfo(l.ctx, in.UserId, in.Name, in.Avatar, in.Buid)
+	if err != nil {
+		return &user.SetInfoResponse{
+			Code: 400,
+			Msg: "set info failed",
+		}, err
+	}
+	return &user.SetInfoResponse{
+		Code: 200,
+		Msg: "success",
+	}, nil
 }

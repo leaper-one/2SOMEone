@@ -59,6 +59,8 @@ message SignInByPhoneResponse {
 }
 
 message GetMeRequest {
+    // 用户 UUID
+    string user_id = 1;
 }
 
 // 用户信息
@@ -99,6 +101,8 @@ message SetInfoRequest {
     string buid = 2;
     // 头像
     string avatar = 3;
+    // 用户 UUID
+    string user_id = 4;
 }
 
 message SetInfoResponse {
