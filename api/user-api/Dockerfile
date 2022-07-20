@@ -17,6 +17,8 @@ FROM ubuntu:20.04 as prof
 
 #COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/ca-certificates.crt
 #COPY --from=builder /usr/share/zoneinfo/Asia/Shanghai /usr/share/zoneinfo/Asia/Shanghai
+RUN apt-get -qq update \
+    && apt-get -qq install -y --no-install-recommends ca-certificates curl
 ENV TZ Asia/Shanghai
 
 WORKDIR /app
