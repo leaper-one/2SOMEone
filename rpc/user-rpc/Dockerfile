@@ -2,7 +2,7 @@ FROM golang:alpine AS builder
 
 LABEL stage=gobuilder
 
-ENV CGO_ENABLED 0
+ENV CGO_ENABLED 1
 ENV GOPROXY https://goproxy.cn,direct
 RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
 
@@ -15,13 +15,13 @@ ADD go.sum .
 RUN go mod download
 COPY . .
 COPY rpc/user-rpc/etc /app/etc
-RUN go build -ldflags="-s -w" -o /app/user rpc/user-rpc/user.go
+RUN go build -o /app/user rpc/user-rpc/user.go
 
 
-FROM scratch
+FROM ubuntu:20.04 as prof
 
-COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/ca-certificates.crt
-COPY --from=builder /usr/share/zoneinfo/Asia/Shanghai /usr/share/zoneinfo/Asia/Shanghai
+#COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/ca-certificates.crt
+#COPY --from=builder /usr/share/zoneinfo/Asia/Shanghai /usr/share/zoneinfo/Asia/Shanghai
 ENV TZ Asia/Shanghai
 
 WORKDIR /app
