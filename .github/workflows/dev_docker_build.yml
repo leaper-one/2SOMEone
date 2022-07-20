@@ -24,7 +24,7 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
           registry: registry.cn-shanghai.aliyuncs.com
           repository: leaperone/2someone
-          file: FILE=rpc\message-rpc\Dockerfile
+          file: rpc\message-rpc\Dockerfile
           tags: message-rpc-v1-dev
           
   build-user-rpc:
@@ -38,7 +38,7 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
           registry: registry.cn-shanghai.aliyuncs.com
           repository: leaperone/2someone
-          file: FILE=rpc\user-rpc\Dockerfile
+          file: rpc\user-rpc\Dockerfile
           tags: user-rpc-v1-dev
 
   build-user-api:
@@ -52,5 +52,5 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
           registry: registry.cn-shanghai.aliyuncs.com
           repository: leaperone/2someone
-          file: FILE=api\user-api\Dockerfile
+          file: api\user-api\Dockerfile
           tags: user-api-v1-dev
