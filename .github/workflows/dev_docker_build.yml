@@ -4,7 +4,7 @@ on:
   push:
     branches: [ dev ]
     paths-ignore:
-      - .github/workflows/dev_docker_build.yml
+      # - .github/workflows/dev_docker_build.yml
       - .github/workflows/master_docker_build.yml
       - .github/workflows/deploy_2someone_release.yml
       - README.md
