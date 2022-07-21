@@ -22,6 +22,3 @@ $ docker build -t <image-name>:<tag> -f <your_path>/Dockerfile .
 ├─store -- CRUD
 └─util -- 相关工具
 ```
-
-## Jenkins构建
-WIP
