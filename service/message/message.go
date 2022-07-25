@@ -28,6 +28,8 @@ type Config struct {
 		RegionId        string `yaml:"region_id"`
 		AccessKeyId     string `yaml:"access_key_id"`
 		AccessKeySecret string `yaml:"access_key_secret"`
+		SignName        string `yaml:"sign_name"`
+		TemplateCode    string `yaml:"template_code"`
 	}
 }
 
@@ -73,8 +75,8 @@ func (a *MsgService) sendPhoneCode(ctx context.Context, phone string) (string, u
 	vcode := fmt.Sprintf("%06v", rnd.Int31n(1000000)) // store
 
 	request.PhoneNumbers = phone
-	request.SignName = "ABC商城"
-	request.TemplateCode = "SMS_205575254"
+	request.SignName = config.AliMsg.SignName
+	request.TemplateCode = config.AliMsg.TemplateCode
 	request.TemplateParam = "{\"code\":" + "\"" + vcode + "\"}"
 
 	respon, err := a.client.SendSms(request)
