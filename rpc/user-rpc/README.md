@@ -1,0 +1,1 @@
+go run .\user\user.go -f .\user\etc\user.yaml

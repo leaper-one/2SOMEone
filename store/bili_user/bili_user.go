@@ -61,3 +61,14 @@ func (s *biliUserStore) FindByUserID(_ context.Context, user_id string) (*core.B
 
 	return &user, nil
 }
+
+func (s *biliUserStore) FindByBuid(_ context.Context, buid int64) (*core.BiliUser, error) {
+	user := core.BiliUser{}
+	if err := s.db.View().Where("buid = ?", buid).Take(&user).Error; err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
+		return nil, err
+	} else if errors.Is(err, gorm.ErrRecordNotFound) {
+		return nil, nil
+	}
+
+	return &user, nil
+}

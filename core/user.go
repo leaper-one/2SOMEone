@@ -51,5 +51,6 @@ type (
 		Auth(ctx context.Context, phone, email, password string) (string, error)
 		SetInfo(ctx context.Context, email, buid, avatar string) error
 		GetMe(ctx context.Context, user_id string) (*BasicUser, error)
+		FindByBuid(ctx context.Context, buid int64) (*BiliUser, error)
 	}
 )
