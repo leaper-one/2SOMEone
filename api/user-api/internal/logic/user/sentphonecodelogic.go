@@ -33,6 +33,7 @@ func (l *SentPhoneCodeLogic) SentPhoneCode(req *types.SentPhoneCodeReq) (resp *t
 	return &types.SentPhoneCodeResp{
 		Code: res.Code,
 		Msg:  res.Msg,
+		Msg_id: res.MsgId,
 	}, nil
 
 }
