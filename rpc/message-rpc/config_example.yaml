@@ -5,3 +5,5 @@ alimsg:
    region_id: cn-hangzhou
    access_key_id: <your access key id>
    access_key_secret: <your access key secret>
+   sign_name: <your sign name>
+   template_code: <your template code>
