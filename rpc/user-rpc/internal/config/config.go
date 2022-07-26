@@ -9,4 +9,5 @@ type Config struct {
 		AccessExpire int64
 	}
 	Message zrpc.RpcClientConf
+	DataSource string
 }
