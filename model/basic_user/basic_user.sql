@@ -36,7 +36,7 @@ CREATE TABLE `basic_users` (
                                `name` varchar(64) COLLATE utf8_bin DEFAULT NULL,
                                `phone` varchar(14) COLLATE utf8_bin DEFAULT NULL,
                                `email` longtext COLLATE utf8_bin,
-                               `password` varchar(20) COLLATE utf8_bin DEFAULT NULL,
+                               `password` varchar(80) COLLATE utf8_bin DEFAULT NULL,
                                `lang` varchar(36) COLLATE utf8_bin DEFAULT 'zh',
                                `avatar` varchar(255) COLLATE utf8_bin DEFAULT NULL,
                                `state` varchar(24) COLLATE utf8_bin DEFAULT 'formal',
