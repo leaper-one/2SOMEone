@@ -4,3 +4,8 @@ Etcd:
   Hosts:
   - 127.0.0.1:2379
   Key: message.rpc
+
+# Mysql Conn Config
+DataSource: <{user}:{password}@tcp({database address})/{database name}>
+Table: message
+
