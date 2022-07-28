@@ -7,6 +7,7 @@ import (
 	"database/sql"
 	"fmt"
 	"strings"
+	"time"
 
 	"github.com/zeromicro/go-zero/core/stores/builder"
 	"github.com/zeromicro/go-zero/core/stores/sqlc"
@@ -25,8 +26,10 @@ type (
 	basicUsersModel interface {
 		Insert(ctx context.Context, data *BasicUsers) (sql.Result, error)
 		FindOne(ctx context.Context, id int64) (*BasicUsers, error)
+		FindOneByPhone(ctx context.Context, phone string) (*BasicUsers, error)
 		Update(ctx context.Context, data *BasicUsers) error
 		Delete(ctx context.Context, id int64) error
+		DeleteByUserId(ctx context.Context, user_id string) error 
 	}
 
 	defaultBasicUsersModel struct {
@@ -57,14 +60,23 @@ func newBasicUsersModel(conn sqlx.SqlConn) *defaultBasicUsersModel {
 	}
 }
 
+// 根据 主键id 删除
 func (m *defaultBasicUsersModel) Delete(ctx context.Context, id int64) error {
-	query := fmt.Sprintf("delete from %s where `id` = ?", m.table)
-	_, err := m.conn.ExecCtx(ctx, query, id)
+	query := fmt.Sprintf("update %s set `deleted_at`=?  where `id` = ?", m.table)
+	_, err := m.conn.ExecCtx(ctx, query, &sql.NullTime{Time: time.Now(), Valid: true}, id)
 	return err
 }
 
+// 根据 用户UUID 删除
+func (m *defaultBasicUsersModel) DeleteByUserId(ctx context.Context, user_id string) error {
+	query := fmt.Sprintf("update %s set `deleted_at`=?  where `user_id` = ?", m.table)
+	_, err := m.conn.ExecCtx(ctx, query, &sql.NullTime{Time: time.Now(), Valid: true}, user_id)
+	return err
+}
+
+// 根据 主键id 查询
 func (m *defaultBasicUsersModel) FindOne(ctx context.Context, id int64) (*BasicUsers, error) {
-	query := fmt.Sprintf("select %s from %s where `id` = ? limit 1", basicUsersRows, m.table)
+	query := fmt.Sprintf("select %s from %s where `id` = ? AND `deleted_at` is not NULL limit 1", basicUsersRows, m.table)
 	var resp BasicUsers
 	err := m.conn.QueryRowCtx(ctx, &resp, query, id)
 	switch err {
@@ -77,15 +89,33 @@ func (m *defaultBasicUsersModel) FindOne(ctx context.Context, id int64) (*BasicU
 	}
 }
 
+// 根据 手机号 查询
+func (m *defaultBasicUsersModel) FindOneByPhone(ctx context.Context, phone string) (*BasicUsers, error) {
+	query := fmt.Sprintf("select %s from %s where `phone` = ? AND `deleted_at` is not NULL limit 1", basicUsersRows, m.table)
+	var resp BasicUsers
+	err := m.conn.QueryRowCtx(ctx, &resp, query, phone)
+	switch err {
+	case nil:
+		return &resp, nil
+	case sqlc.ErrNotFound:
+		return nil, ErrNotFound
+	default:
+		return nil, err
+	}
+}
+
+// 插入用户记录
 func (m *defaultBasicUsersModel) Insert(ctx context.Context, data *BasicUsers) (sql.Result, error) {
 	query := fmt.Sprintf("insert into %s (%s) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", m.table, basicUsersRowsExpectAutoSet)
-	ret, err := m.conn.ExecCtx(ctx, query, data.CreatedAt, data.UpdatedAt, data.DeletedAt, data.UserId, data.Name, data.Phone, data.Email, data.Password, data.Lang, data.Avatar, data.State)
+	ret, err := m.conn.ExecCtx(ctx, query, &sql.NullTime{Time: time.Now(), Valid: true}, data.UpdatedAt, data.DeletedAt, data.UserId, data.Name, data.Phone, data.Email, data.Password, data.Lang, data.Avatar, data.State)
 	return ret, err
 }
 
+// 更新用户记录
 func (m *defaultBasicUsersModel) Update(ctx context.Context, data *BasicUsers) error {
 	query := fmt.Sprintf("update %s set %s where `id` = ?", m.table, basicUsersRowsWithPlaceHolder)
-	_, err := m.conn.ExecCtx(ctx, query, data.CreatedAt, data.UpdatedAt, data.DeletedAt, data.UserId, data.Name, data.Phone, data.Email, data.Password, data.Lang, data.Avatar, data.State, data.Id)
+	// TODO: 创建时间create_at 不需要更新
+	_, err := m.conn.ExecCtx(ctx, query, data.CreatedAt, &sql.NullTime{Time: time.Now(), Valid: true}, data.DeletedAt, data.UserId, data.Name, data.Phone, data.Email, data.Password, data.Lang, data.Avatar, data.State, data.Id)
 	return err
 }
 

@@ -2,7 +2,9 @@ package logic
 
 import (
 	"context"
+	"database/sql"
 
+	"github.com/leaper-one/2SOMEone/model/basic_user"
 	"github.com/leaper-one/2SOMEone/rpc/message-rpc/types/message"
 	"github.com/leaper-one/2SOMEone/rpc/user-rpc/internal/svc"
 	"github.com/leaper-one/2SOMEone/rpc/user-rpc/types/user"
@@ -47,15 +49,53 @@ func (l *SignUpByPhoneLogic) SignUpByPhone(in *user.SignUpByPhoneRequest) (*user
 
 	}
 	// 注册用户
-	err = user_service.SignUpByPhone(l.ctx, in.Phone, in.Password)
+	// err = user_service.SignUpByPhone(l.ctx, in.Phone, in.Password)
+	// if err != nil {
+	// 	return &user.SignUpByPhoneResponse{
+	// 		Code: 500,
+	// 		Msg:  "注册失败",
+	// 	}, err
+	// }
+	// return &user.SignUpByPhoneResponse{
+	// 	Code: 200,
+	// 	Msg:  "注册成功",
+	// }, nil
+
+	// 查询用户是否存在
+	_, err =l.svcCtx.Model.FindOneByPhone(l.ctx, in.Phone)
+	if err == basic_user.ErrNotFound {
+		return &user.SignUpByPhoneResponse{
+			Code: 400,
+			Msg:  "用户已存在",
+		}, nil
+	}
+
+	// 创建用户
+	user_id, password, err := user_service.CreateUser(l.ctx, in.Password)
 	if err != nil {
 		return &user.SignUpByPhoneResponse{
 			Code: 500,
-			Msg:  "注册失败",
+			Msg:  "创建用户失败",
 		}, err
 	}
+	// 插入数据库
+	_, err = l.svcCtx.Model.Insert(l.ctx, &basic_user.BasicUsers{
+		UserId:   sql.NullString{String: user_id, Valid: true},
+		Phone:    sql.NullString{String: in.Phone, Valid: true},
+		Password: sql.NullString{String: password, Valid: true},
+		Name:     sql.NullString{String: in.Phone, Valid: true},
+	})
+
+	if err != nil {
+		return &user.SignUpByPhoneResponse{
+			Code: 500,
+			Msg:  "存储用户失败",
+		}, err
+	}
+
 	return &user.SignUpByPhoneResponse{
 		Code: 200,
 		Msg:  "注册成功",
 	}, nil
+
 }
