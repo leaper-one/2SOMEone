@@ -1,6 +1,7 @@
 package util
 
 import (
+	"gorm.io/driver/mysql"
 	"log"
 
 	"github.com/leaper-one/2SOMEone/core"
@@ -20,7 +21,22 @@ func OpenDB(path string) *DB {
 	if err != nil {
 		log.Panicln(err)
 	}
-	db.AutoMigrate(&core.BasicUser{}, &core.Note{}, &core.Message{}, &core.BiliUser{}, &core.Message{})
+	err = db.AutoMigrate(&core.BasicUser{}, &core.Note{}, &core.Message{}, &core.BiliUser{}, &core.Message{})
+	if err != nil {
+		return nil
+	}
+	return &DB{write: db, read: db}
+}
+
+func OpenMysql(dsn string) *DB {
+	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
+	if err != nil {
+		log.Panicln(err)
+	}
+	err = db.AutoMigrate(&core.BasicUser{}, &core.Note{}, &core.Message{}, &core.BiliUser{}, &core.Message{})
+	if err != nil {
+		return nil
+	}
 	return &DB{write: db, read: db}
 }
 

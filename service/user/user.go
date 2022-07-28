@@ -62,6 +62,20 @@ func (a *UserService) signUpByPhone(ctx context.Context, phone, password string)
 	return nil
 }
 
+func CreateUser(ctx context.Context, password string) (string, string, error) {
+	// 创建用户
+	user_id, err := uuid.NewV1()
+	if err != nil {
+		return "", "", err
+	}
+	// 密码加密
+	hashedPassword, err := util.HashPassword(password)
+	if err != nil {
+		return "", "", err
+	}
+	return user_id.String(), hashedPassword, nil
+}
+
 func Auth(ctx context.Context, phone, password, secretKey string, expireDuration time.Duration) (string, error) {
 	userService := NewUserService(dbc)
 	token, err := userService.auth(ctx, phone, password, secretKey, expireDuration)
