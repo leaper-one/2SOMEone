@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"github.com/leaper-one/2SOMEone/core"
+	"io"
 	"io/ioutil"
 	"net/http"
 	"net/url"
@@ -85,7 +86,12 @@ func (l *SetInfoLogic) SetInfo(in *user.SetInfoRequest) (*user.SetInfoResponse, 
 				Msg:  "Http Get Error",
 			}, nil
 		}
-		defer resp.Body.Close()
+		defer func(Body io.ReadCloser) {
+			err := Body.Close()
+			if err != nil {
+
+			}
+		}(resp.Body)
 		body, err := ioutil.ReadAll(resp.Body)
 		if err != nil {
 			return &user.SetInfoResponse{
