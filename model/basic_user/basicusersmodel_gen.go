@@ -27,9 +27,10 @@ type (
 		Insert(ctx context.Context, data *BasicUsers) (sql.Result, error)
 		FindOne(ctx context.Context, id int64) (*BasicUsers, error)
 		FindOneByPhone(ctx context.Context, phone string) (*BasicUsers, error)
+		FindOneByUserId(ctx context.Context, user_id string) (*BasicUsers, error)
 		Update(ctx context.Context, data *BasicUsers) error
 		Delete(ctx context.Context, id int64) error
-		DeleteByUserId(ctx context.Context, user_id string) error 
+		DeleteByUserId(ctx context.Context, user_id string) error
 	}
 
 	defaultBasicUsersModel struct {
@@ -94,6 +95,21 @@ func (m *defaultBasicUsersModel) FindOneByPhone(ctx context.Context, phone strin
 	query := fmt.Sprintf("select %s from %s where `phone` = ? AND `deleted_at` is not NULL limit 1", basicUsersRows, m.table)
 	var resp BasicUsers
 	err := m.conn.QueryRowCtx(ctx, &resp, query, phone)
+	switch err {
+	case nil:
+		return &resp, nil
+	case sqlc.ErrNotFound:
+		return nil, ErrNotFound
+	default:
+		return nil, err
+	}
+}
+
+// 根据 user_id 查询
+func (m *defaultBasicUsersModel) FindOneByUserId(ctx context.Context, user_id string) (*BasicUsers, error) {
+	query := fmt.Sprintf("select %s from %s where `user_id` = ? AND `deleted_at` is not NULL limit 1", basicUsersRows, m.table)
+	var resp BasicUsers
+	err := m.conn.QueryRowCtx(ctx, &resp, query, user_id)
 	switch err {
 	case nil:
 		return &resp, nil

@@ -5,8 +5,6 @@ import (
 
 	"github.com/leaper-one/2SOMEone/rpc/user-rpc/internal/svc"
 	"github.com/leaper-one/2SOMEone/rpc/user-rpc/types/user"
-	user_service "github.com/leaper-one/2SOMEone/service/user"
-
 	"github.com/zeromicro/go-zero/core/logx"
 )
 
@@ -26,25 +24,25 @@ func NewGetMeLogic(ctx context.Context, svcCtx *svc.ServiceContext) *GetMeLogic 
 
 //  Get current user infomation by metadata with auth token
 func (l *GetMeLogic) GetMe(in *user.GetMeRequest) (*user.GetMeResponse, error) {
-	user_info, err := user_service.GetMe(l.ctx, in.UserId)
+	user_info, err := l.svcCtx.BasicUsersModel.FindOneByUserId(l.ctx, in.UserId)
 	if err != nil {
 		return &user.GetMeResponse{
-			Code:	400,
-			Msg:	"Get user info failed",
-			User: 	nil,
+			Code: 400,
+			Msg:  "Get user info failed",
+			User: nil,
 		}, err
 	}
 
 	return &user.GetMeResponse{
-		Code:	200,
-		Msg:	"Success.",
-		User: 	&user.BasicUser{
-			UserId: user_info.UserID,
+		Code: 200,
+		Msg:  "Success.",
+		User: &user.BasicUser{
+			UserId: user_info.UserId.String,
 			UserInfo: &user.UserInfo{
-				Name: user_info.Name,
-				Phone: user_info.Phone,
-				Avatar: user_info.Avatar,
-				Email: user_info.Email,
+				Name:   user_info.Name.String,
+				Phone:  user_info.Phone.String,
+				Avatar: user_info.Avatar.String,
+				Email:  user_info.Email.String,
 			},
 		},
 	}, nil

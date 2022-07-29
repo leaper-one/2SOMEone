@@ -7,7 +7,6 @@ import (
 	"math/rand"
 	"time"
 
-	"github.com/leaper-one/2SOMEone/core"
 	"github.com/leaper-one/2SOMEone/store/msg"
 	"github.com/leaper-one/2SOMEone/util"
 
@@ -57,15 +56,13 @@ type MsgService struct {
 	client *dysmsapi.Client
 }
 
-func SendPhoneCode(ctx context.Context, phone string) (string, uint64, error) {
+func SendPhoneCode(ctx context.Context, phone string) (string, error) {
 	msgService := NewMsgService(dbc, config.AliMsg.RegionId, config.AliMsg.AccessKeyId, config.AliMsg.AccessKeySecret)
 	return msgService.sendPhoneCode(ctx, phone)
 }
 
 // Send random code to phone via aliyun msg api
-func (a *MsgService) sendPhoneCode(ctx context.Context, phone string) (string, uint64, error) {
-	// 初始化 msg store
-	msgStore := msg.New(a.db)
+func (a *MsgService) sendPhoneCode(ctx context.Context, phone string) (string, error) {
 
 	request := dysmsapi.CreateSendSmsRequest()
 	request.Scheme = "https"
@@ -79,21 +76,15 @@ func (a *MsgService) sendPhoneCode(ctx context.Context, phone string) (string, u
 	request.TemplateCode = config.AliMsg.TemplateCode
 	request.TemplateParam = "{\"code\":" + "\"" + vcode + "\"}"
 
-	respon, err := a.client.SendSms(request)
+	response, err := a.client.SendSms(request)
 	if err != nil {
-		return "", 0, err
+		return "", err
 	}
-	if respon.Code != "OK" {
-		return "", 0, errors.New(respon.Message)
+	if response.Code != "OK" {
+		return "", errors.New(response.Message)
 	}
 
-	msg := &core.Message{Type: 0, Phone: phone, Content: "", Code: vcode}
-	err = msgStore.Create(ctx, msg)
-	if err != nil {
-		return "", 0, err
-	}
-
-	return msg.Code, uint64(msg.ID), nil
+	return vcode, nil
 }
 
 func CheckPhoneCode(ctx context.Context, phone, code string, msg_id uint) (bool, error) {

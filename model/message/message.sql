@@ -29,9 +29,7 @@ SET time_zone = "+00:00";
 
 CREATE TABLE `messages` (
                             `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT,
-                            `created_at` datetime(3) DEFAULT NULL,
-                            `updated_at` datetime(3) DEFAULT NULL,
-                            `deleted_at` datetime(3) DEFAULT NULL,
+                            `timestamp` bigint(20) DEFAULT '0',
                             `phone` varchar(14) COLLATE utf8_bin DEFAULT NULL,
                             `type` tinyint(1) DEFAULT '0',
                             `content` varchar(512) COLLATE utf8_bin DEFAULT NULL,
