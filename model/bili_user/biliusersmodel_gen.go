@@ -7,6 +7,7 @@ import (
 	"database/sql"
 	"fmt"
 	"strings"
+	"time"
 
 	"github.com/zeromicro/go-zero/core/stores/builder"
 	"github.com/zeromicro/go-zero/core/stores/sqlc"
@@ -24,7 +25,9 @@ var (
 type (
 	biliUsersModel interface {
 		Insert(ctx context.Context, data *BiliUsers) (sql.Result, error)
+		InsertBiliUser(ctx context.Context, user_id string, buid int64, live_room_id int64, live_room_url string) (sql.Result, error)
 		FindOne(ctx context.Context, id int64) (*BiliUsers, error)
+		FindOneByBuid(ctx context.Context, buid int64) (*BiliUsers, error)
 		Update(ctx context.Context, data *BiliUsers) error
 		Delete(ctx context.Context, id int64) error
 	}
@@ -73,9 +76,55 @@ func (m *defaultBiliUsersModel) FindOne(ctx context.Context, id int64) (*BiliUse
 	}
 }
 
+func (m *defaultBiliUsersModel) FindOneByBuid(ctx context.Context, buid int64) (*BiliUsers, error) {
+	query := fmt.Sprintf("select %s from %s where `buid` = ? limit 1", biliUsersRows, m.table)
+	var resp BiliUsers
+	err := m.conn.QueryRowCtx(ctx, &resp, query, buid)
+	switch err {
+	case nil:
+		return &resp, nil
+	case sqlc.ErrNotFound:
+		return nil, ErrNotFound
+	default:
+		return nil, err
+	}
+}
+
 func (m *defaultBiliUsersModel) Insert(ctx context.Context, data *BiliUsers) (sql.Result, error) {
 	query := fmt.Sprintf("insert into %s (%s) values (?, ?, ?, ?, ?, ?, ?)", m.table, biliUsersRowsExpectAutoSet)
 	ret, err := m.conn.ExecCtx(ctx, query, data.CreatedAt, data.UpdatedAt, data.DeletedAt, data.UserId, data.Buid, data.LiveRoomId, data.LiveRoomUrl)
+	return ret, err
+}
+
+func (m *defaultBiliUsersModel) InsertBiliUser(ctx context.Context, user_id string, buid int64, live_room_id int64, live_room_url string) (sql.Result, error) {
+	query := fmt.Sprintf("insert into %s (%s) values (?, ?, ?, ?, ?, ?, ?)", m.table, biliUsersRowsExpectAutoSet)
+	ret, err := m.conn.ExecCtx(ctx, query,
+		sql.NullTime{
+			Time:  time.Now(),
+			Valid: true,
+		},
+		sql.NullTime{
+			Valid: false,
+		},
+		sql.NullTime{
+			Valid: false,
+		},
+		sql.NullString{
+			String: user_id,
+			Valid:  true,
+		},
+		sql.NullInt64{
+			Int64: buid,
+			Valid: true,
+		},
+		sql.NullInt64{
+			Int64: live_room_id,
+			Valid: true,
+		},
+		sql.NullString{
+			String: live_room_url,
+			Valid:  true,
+		})
 	return ret, err
 }
 

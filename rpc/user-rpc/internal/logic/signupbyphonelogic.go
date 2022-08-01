@@ -38,7 +38,7 @@ func (l *SignUpByPhoneLogic) SignUpByPhone(in *user.SignUpByPhoneRequest) (*user
 	if err != nil {
 		return &user.SignUpByPhoneResponse{
 			Code: 500,
-			Msg:  "Falt.",
+			Msg:  "Fatal",
 		}, nil
 	}
 	if !res.IsMatch {
@@ -62,7 +62,7 @@ func (l *SignUpByPhoneLogic) SignUpByPhone(in *user.SignUpByPhoneRequest) (*user
 	// }, nil
 
 	// 查询用户是否存在
-	_, err =l.svcCtx.Model.FindOneByPhone(l.ctx, in.Phone)
+	_, err = l.svcCtx.BasicUsersModel.FindOneByPhone(l.ctx, in.Phone)
 	if err == basic_user.ErrNotFound {
 		return &user.SignUpByPhoneResponse{
 			Code: 400,
@@ -79,7 +79,7 @@ func (l *SignUpByPhoneLogic) SignUpByPhone(in *user.SignUpByPhoneRequest) (*user
 		}, err
 	}
 	// 插入数据库
-	_, err = l.svcCtx.Model.Insert(l.ctx, &basic_user.BasicUsers{
+	_, err = l.svcCtx.BasicUsersModel.Insert(l.ctx, &basic_user.BasicUsers{
 		UserId:   sql.NullString{String: user_id, Valid: true},
 		Phone:    sql.NullString{String: in.Phone, Valid: true},
 		Password: sql.NullString{String: password, Valid: true},
