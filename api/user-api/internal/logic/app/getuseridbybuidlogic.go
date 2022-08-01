@@ -5,6 +5,7 @@ import (
 
 	"github.com/leaper-one/2SOMEone/api/user-api/internal/svc"
 	"github.com/leaper-one/2SOMEone/api/user-api/internal/types"
+	"github.com/leaper-one/2SOMEone/rpc/user-rpc/types/user"
 
 	"github.com/zeromicro/go-zero/core/logx"
 )
@@ -24,7 +25,15 @@ func NewGetUserIdByBuidLogic(ctx context.Context, svcCtx *svc.ServiceContext) *G
 }
 
 func (l *GetUserIdByBuidLogic) GetUserIdByBuid(req *types.GetUserIdByBuidReq) (resp *types.GetUserIdByBuidResp, err error) {
-	// todo: add your logic here and delete this line
-
-	return
+	res, err := l.svcCtx.User.GetUserIDByBuid(l.ctx, &user.GetUserIDByBuidRequest{
+		Buid: req.Buid,
+	})
+	if err != nil {
+		return &types.GetUserIdByBuidResp{}, err
+	}
+	return &types.GetUserIdByBuidResp{
+		Code:   res.Code,
+		Msg:    res.Msg,
+		UserId: res.UserId,
+	}, nil
 }
