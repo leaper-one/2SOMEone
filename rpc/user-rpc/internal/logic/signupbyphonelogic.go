@@ -63,7 +63,7 @@ func (l *SignUpByPhoneLogic) SignUpByPhone(in *user.SignUpByPhoneRequest) (*user
 
 	// 查询用户是否存在
 	_, err = l.svcCtx.BasicUsersModel.FindOneByPhone(l.ctx, in.Phone)
-	if err == basic_user.ErrNotFound {
+	if err != basic_user.ErrNotFound {
 		return &user.SignUpByPhoneResponse{
 			Code: 400,
 			Msg:  "用户已存在",
