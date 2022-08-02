@@ -5,5 +5,7 @@ Etcd:
   - 127.0.0.1:2379
   Key: message.rpc
 
+Timeout: 10000
+
 # Mysql Conn Config
 DataSource: <{user}:{password}@tcp({database address})/{database name}>

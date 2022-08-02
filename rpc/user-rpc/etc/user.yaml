@@ -13,5 +13,7 @@ JwtAuth:
   AccessSecret: <AccessSecret>
   AccessExpire: 604800
 
+Timeout: 10000
+
 # Mysql Conn Config
 Datasource: <{user}:{password}@tcp({database address})/{database name}>
