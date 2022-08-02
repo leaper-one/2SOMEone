@@ -33,7 +33,7 @@ func (l *SignInByPhoneLogic) SignInByPhone(in *user.SignInByPhoneRequest) (*user
 	if err != nil {
 		return &user.SignInByPhoneResponse{
 			Code: 500,
-			Msg:  "Fatal",
+			Msg:  err.Error(),
 		}, nil
 	}
 
@@ -49,7 +49,7 @@ func (l *SignInByPhoneLogic) SignInByPhone(in *user.SignInByPhoneRequest) (*user
 		if err != nil {
 			return &user.SignInByPhoneResponse{
 				Code: 500,
-				Msg:  "Fatal",
+				Msg:  err.Error(),
 			}, nil
 		}
 	} else {
