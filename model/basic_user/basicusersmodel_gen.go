@@ -77,7 +77,7 @@ func (m *defaultBasicUsersModel) DeleteByUserId(ctx context.Context, user_id str
 
 // 根据 主键id 查询
 func (m *defaultBasicUsersModel) FindOne(ctx context.Context, id int64) (*BasicUsers, error) {
-	query := fmt.Sprintf("select %s from %s where `id` = ? AND `deleted_at` is not NULL limit 1", basicUsersRows, m.table)
+	query := fmt.Sprintf("select %s from %s where `id` = ? AND `deleted_at` is NULL limit 1", basicUsersRows, m.table)
 	var resp BasicUsers
 	err := m.conn.QueryRowCtx(ctx, &resp, query, id)
 	switch err {
@@ -92,7 +92,7 @@ func (m *defaultBasicUsersModel) FindOne(ctx context.Context, id int64) (*BasicU
 
 // 根据 手机号 查询
 func (m *defaultBasicUsersModel) FindOneByPhone(ctx context.Context, phone string) (*BasicUsers, error) {
-	query := fmt.Sprintf("select %s from %s where `phone` = ? AND `deleted_at` is not NULL limit 1", basicUsersRows, m.table)
+	query := fmt.Sprintf("select %s from %s where `phone` = ? AND `deleted_at` is NULL limit 1", basicUsersRows, m.table)
 	var resp BasicUsers
 	err := m.conn.QueryRowCtx(ctx, &resp, query, phone)
 	switch err {
@@ -107,7 +107,7 @@ func (m *defaultBasicUsersModel) FindOneByPhone(ctx context.Context, phone strin
 
 // 根据 user_id 查询
 func (m *defaultBasicUsersModel) FindOneByUserId(ctx context.Context, user_id string) (*BasicUsers, error) {
-	query := fmt.Sprintf("select %s from %s where `user_id` = ? AND `deleted_at` is not NULL limit 1", basicUsersRows, m.table)
+	query := fmt.Sprintf("select %s from %s where `user_id` = ? AND `deleted_at` is NULL limit 1", basicUsersRows, m.table)
 	var resp BasicUsers
 	err := m.conn.QueryRowCtx(ctx, &resp, query, user_id)
 	switch err {
