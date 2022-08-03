@@ -132,6 +132,8 @@ func (l *SetInfoLogic) SetInfo(in *user.SetInfoRequest) (*user.SetInfoResponse, 
 		}
 	}
 
+	logx.Info("userData: %+v", userData)
+
 	err = l.svcCtx.BasicUsersModel.Update(l.ctx, userData)
 
 	if err != nil {
