@@ -132,7 +132,7 @@ func (l *SetInfoLogic) SetInfo(in *user.SetInfoRequest) (*user.SetInfoResponse, 
 		}
 	}
 
-	_, err = l.svcCtx.BasicUsersModel.Insert(l.ctx, userData)
+	err = l.svcCtx.BasicUsersModel.Update(l.ctx, userData)
 
 	if err != nil {
 		return &user.SetInfoResponse{
