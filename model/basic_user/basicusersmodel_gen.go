@@ -128,9 +128,14 @@ func (m *defaultBasicUsersModel) Insert(ctx context.Context, data *BasicUsers) (
 }
 
 // 更新用户记录
+//func (m *defaultBasicUsersModel) Update(ctx context.Context, data *BasicUsers) error {
+//	query := fmt.Sprintf("update %s set %s where `id` = ?", m.table, basicUsersRowsWithPlaceHolder)
+//	// TODO: 创建时间create_at 不需要更新
+//	_, err := m.conn.ExecCtx(ctx, query, data.CreatedAt, &sql.NullTime{Time: time.Now(), Valid: true}, data.DeletedAt, data.UserId, data.Name, data.Phone, data.Email, data.Password, data.Lang, data.Avatar, data.State, data.Id)
+//	return err
+//}
 func (m *defaultBasicUsersModel) Update(ctx context.Context, data *BasicUsers) error {
-	query := fmt.Sprintf("update %s set %s where `id` = ?", m.table, basicUsersRowsWithPlaceHolder)
-	// TODO: 创建时间create_at 不需要更新
+	query := fmt.Sprintf("update %s set (`created_at`=?,`updated_at`=?,`deleted_at`=?,`user_id`=?,`name`=?,`phone`=?,`email`=?,`password`=?,`lang`=?,`avatar`=?,`state`=?) where `id` = ?", m.table)
 	_, err := m.conn.ExecCtx(ctx, query, data.CreatedAt, &sql.NullTime{Time: time.Now(), Valid: true}, data.DeletedAt, data.UserId, data.Name, data.Phone, data.Email, data.Password, data.Lang, data.Avatar, data.State, data.Id)
 	return err
 }
