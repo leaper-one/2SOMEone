@@ -66,4 +66,5 @@ func (l *CheckMessageCodeLogic) CheckMessageCode(in *message.CheckMessageCodeReq
 		Msg:     "success",
 		IsMatch: true,
 	}, nil
+
 }

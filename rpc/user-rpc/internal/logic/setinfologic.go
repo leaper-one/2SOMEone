@@ -111,10 +111,7 @@ func (l *SetInfoLogic) SetInfo(in *user.SetInfoRequest) (*user.SetInfoResponse, 
 		// 写入 BiliUser 表
 		_, err = l.svcCtx.BiliUsersModel.InsertBiliUser(l.ctx, in.UserId, int64(bili_user_info.Data.Mid), int64(bili_user_info.Data.LiveRoom.RoomID), bili_user_info.Data.LiveRoom.Url)
 		if err != nil {
-			return &user.SetInfoResponse{
-				Code: 500,
-				Msg:  "Error Insert to BiliUser",
-			}, nil
+			logx.Info("Insert BiliUser Error: %s", err.Error())
 		}
 
 		if in.Name == "" {
@@ -124,6 +121,7 @@ func (l *SetInfoLogic) SetInfo(in *user.SetInfoRequest) (*user.SetInfoResponse, 
 			}
 
 		}
+
 		if in.Avatar == "" {
 			userData.Avatar = sql.NullString{
 				String: bili_user_info.Data.Face,
@@ -142,6 +140,7 @@ func (l *SetInfoLogic) SetInfo(in *user.SetInfoRequest) (*user.SetInfoResponse, 
 			Msg:  "set info failed",
 		}, err
 	}
+
 	return &user.SetInfoResponse{
 		Code: 200,
 		Msg:  "success",
